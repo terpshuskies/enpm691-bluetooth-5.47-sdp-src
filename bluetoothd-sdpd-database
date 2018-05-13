@@ -1,0 +1,665 @@
+
+bluetoothd-sdpd-database.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <compare_indices>:
+
+static int compare_indices(const void *i1, const void *i2)
+{
+	const sdp_indexed_t *s1 = i1;
+	const sdp_indexed_t *s2 = i2;
+	return s1->sock - s2->sock;
+   0:	8b 07                	mov    (%rdi),%eax
+   2:	2b 06                	sub    (%rsi),%eax
+}
+   4:	c3                   	retq   
+   5:	90                   	nop
+   6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+   d:	00 00 00 
+
+0000000000000010 <record_sort>:
+{
+  10:	48 83 ec 08          	sub    $0x8,%rsp
+	if (!rec1 || !rec2) {
+  14:	48 85 ff             	test   %rdi,%rdi
+  17:	74 17                	je     30 <record_sort+0x20>
+  19:	48 85 f6             	test   %rsi,%rsi
+  1c:	74 12                	je     30 <record_sort+0x20>
+	return rec1->handle - rec2->handle;
+  1e:	8b 07                	mov    (%rdi),%eax
+  20:	2b 06                	sub    (%rsi),%eax
+}
+  22:	48 83 c4 08          	add    $0x8,%rsp
+  26:	c3                   	retq   
+  27:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+  2e:	00 00 
+		error("NULL RECORD LIST FATAL");
+  30:	31 c0                	xor    %eax,%eax
+  32:	bf 00 00 00 00       	mov    $0x0,%edi
+  37:	e8 00 00 00 00       	callq  3c <record_sort+0x2c>
+		return -1;
+  3c:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+  41:	eb df                	jmp    22 <record_sort+0x12>
+  43:	0f 1f 00             	nopl   (%rax)
+  46:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+  4d:	00 00 00 
+
+0000000000000050 <record_locate>:
+
+	access_db = sdp_list_insert_sorted(access_db, dev, access_sort);
+}
+
+static sdp_list_t *record_locate(uint32_t handle)
+{
+  50:	53                   	push   %rbx
+  51:	48 83 ec 30          	sub    $0x30,%rsp
+	if (service_db) {
+  55:	48 8b 1d 00 00 00 00 	mov    0x0(%rip),%rbx        # 5c <record_locate+0xc>
+  5c:	48 85 db             	test   %rbx,%rbx
+  5f:	74 1f                	je     80 <record_locate+0x30>
+		sdp_list_t *p;
+		sdp_record_t r;
+
+		r.handle = handle;
+  61:	89 3c 24             	mov    %edi,(%rsp)
+  64:	0f 1f 40 00          	nopl   0x0(%rax)
+}
+
+static inline sdp_list_t *sdp_list_find(sdp_list_t *list, void *u, sdp_comp_func_t f)
+{
+	for (; list; list = list->next)
+		if (f(list->data, u) == 0)
+  68:	48 8b 7b 08          	mov    0x8(%rbx),%rdi
+  6c:	48 89 e6             	mov    %rsp,%rsi
+  6f:	e8 00 00 00 00       	callq  74 <record_locate+0x24>
+  74:	85 c0                	test   %eax,%eax
+  76:	74 18                	je     90 <record_locate+0x40>
+	for (; list; list = list->next)
+  78:	48 8b 1b             	mov    (%rbx),%rbx
+  7b:	48 85 db             	test   %rbx,%rbx
+  7e:	75 e8                	jne    68 <record_locate+0x18>
+		return p;
+	}
+
+	SDPDBG("Could not find svcRec for : 0x%x", handle);
+	return NULL;
+}
+  80:	48 83 c4 30          	add    $0x30,%rsp
+	return NULL;
+  84:	31 c0                	xor    %eax,%eax
+}
+  86:	5b                   	pop    %rbx
+  87:	c3                   	retq   
+  88:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+  8f:	00 
+  90:	48 83 c4 30          	add    $0x30,%rsp
+		if (f(list->data, u) == 0)
+  94:	48 89 d8             	mov    %rbx,%rax
+  97:	5b                   	pop    %rbx
+  98:	c3                   	retq   
+  99:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+00000000000000a0 <access_sort>:
+{
+  a0:	48 83 ec 08          	sub    $0x8,%rsp
+	if (!rec1 || !rec2) {
+  a4:	48 85 ff             	test   %rdi,%rdi
+  a7:	74 17                	je     c0 <access_sort+0x20>
+  a9:	48 85 f6             	test   %rsi,%rsi
+  ac:	74 12                	je     c0 <access_sort+0x20>
+	return rec1->handle - rec2->handle;
+  ae:	8b 07                	mov    (%rdi),%eax
+  b0:	2b 06                	sub    (%rsi),%eax
+}
+  b2:	48 83 c4 08          	add    $0x8,%rsp
+  b6:	c3                   	retq   
+  b7:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+  be:	00 00 
+		error("NULL RECORD LIST FATAL");
+  c0:	31 c0                	xor    %eax,%eax
+  c2:	bf 00 00 00 00       	mov    $0x0,%edi
+  c7:	e8 00 00 00 00       	callq  cc <access_sort+0x2c>
+		return -1;
+  cc:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+  d1:	eb df                	jmp    b2 <access_sort+0x12>
+  d3:	0f 1f 00             	nopl   (%rax)
+  d6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+  dd:	00 00 00 
+
+00000000000000e0 <access_locate>:
+
+static sdp_list_t *access_locate(uint32_t handle)
+{
+  e0:	53                   	push   %rbx
+  e1:	48 83 ec 10          	sub    $0x10,%rsp
+	if (access_db) {
+  e5:	48 8b 1d 00 00 00 00 	mov    0x0(%rip),%rbx        # ec <access_locate+0xc>
+  ec:	48 85 db             	test   %rbx,%rbx
+  ef:	74 1f                	je     110 <access_locate+0x30>
+		sdp_list_t *p;
+		sdp_access_t a;
+
+		a.handle = handle;
+  f1:	89 3c 24             	mov    %edi,(%rsp)
+  f4:	0f 1f 40 00          	nopl   0x0(%rax)
+  f8:	48 8b 7b 08          	mov    0x8(%rbx),%rdi
+  fc:	48 89 e6             	mov    %rsp,%rsi
+  ff:	e8 9c ff ff ff       	callq  a0 <access_sort>
+ 104:	85 c0                	test   %eax,%eax
+ 106:	74 18                	je     120 <access_locate+0x40>
+	for (; list; list = list->next)
+ 108:	48 8b 1b             	mov    (%rbx),%rbx
+ 10b:	48 85 db             	test   %rbx,%rbx
+ 10e:	75 e8                	jne    f8 <access_locate+0x18>
+		return p;
+	}
+
+	SDPDBG("Could not find access data for : 0x%x", handle);
+	return NULL;
+}
+ 110:	48 83 c4 10          	add    $0x10,%rsp
+	return NULL;
+ 114:	31 c0                	xor    %eax,%eax
+}
+ 116:	5b                   	pop    %rbx
+ 117:	c3                   	retq   
+ 118:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+ 11f:	00 
+ 120:	48 83 c4 10          	add    $0x10,%rsp
+		if (f(list->data, u) == 0)
+ 124:	48 89 d8             	mov    %rbx,%rax
+ 127:	5b                   	pop    %rbx
+ 128:	c3                   	retq   
+ 129:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+0000000000000130 <access_free>:
+	free(p);
+ 130:	e9 00 00 00 00       	jmpq   135 <access_free+0x5>
+ 135:	90                   	nop
+ 136:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+ 13d:	00 00 00 
+
+0000000000000140 <sdp_svcdb_reset>:
+{
+ 140:	48 83 ec 08          	sub    $0x8,%rsp
+	sdp_list_free(service_db, (sdp_free_func_t) sdp_record_free);
+ 144:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 14b <sdp_svcdb_reset+0xb>
+ 14b:	be 00 00 00 00       	mov    $0x0,%esi
+ 150:	e8 00 00 00 00       	callq  155 <sdp_svcdb_reset+0x15>
+	sdp_list_free(access_db, access_free);
+ 155:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 15c <sdp_svcdb_reset+0x1c>
+ 15c:	be 00 00 00 00       	mov    $0x0,%esi
+	service_db = NULL;
+ 161:	48 c7 05 00 00 00 00 	movq   $0x0,0x0(%rip)        # 16c <sdp_svcdb_reset+0x2c>
+ 168:	00 00 00 00 
+	sdp_list_free(access_db, access_free);
+ 16c:	e8 00 00 00 00       	callq  171 <sdp_svcdb_reset+0x31>
+	access_db = NULL;
+ 171:	48 c7 05 00 00 00 00 	movq   $0x0,0x0(%rip)        # 17c <sdp_svcdb_reset+0x3c>
+ 178:	00 00 00 00 
+}
+ 17c:	48 83 c4 08          	add    $0x8,%rsp
+ 180:	c3                   	retq   
+ 181:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+ 186:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+ 18d:	00 00 00 
+
+0000000000000190 <sdp_svcdb_collect>:
+{
+ 190:	55                   	push   %rbp
+ 191:	53                   	push   %rbx
+ 192:	48 83 ec 08          	sub    $0x8,%rsp
+	for (p = socket_index, q = 0; p; q = p, p = p->next) {
+ 196:	48 8b 2d 00 00 00 00 	mov    0x0(%rip),%rbp        # 19d <sdp_svcdb_collect+0xd>
+ 19d:	48 85 ed             	test   %rbp,%rbp
+ 1a0:	74 24                	je     1c6 <sdp_svcdb_collect+0x36>
+		sdp_indexed_t *item = p->data;
+ 1a2:	48 8b 45 08          	mov    0x8(%rbp),%rax
+		if (rec == item->record) {
+ 1a6:	48 39 78 08          	cmp    %rdi,0x8(%rax)
+ 1aa:	75 11                	jne    1bd <sdp_svcdb_collect+0x2d>
+ 1ac:	eb 3f                	jmp    1ed <sdp_svcdb_collect+0x5d>
+ 1ae:	66 90                	xchg   %ax,%ax
+		sdp_indexed_t *item = p->data;
+ 1b0:	48 8b 43 08          	mov    0x8(%rbx),%rax
+		if (rec == item->record) {
+ 1b4:	48 39 78 08          	cmp    %rdi,0x8(%rax)
+ 1b8:	74 16                	je     1d0 <sdp_svcdb_collect+0x40>
+ 1ba:	48 89 dd             	mov    %rbx,%rbp
+	for (p = socket_index, q = 0; p; q = p, p = p->next) {
+ 1bd:	48 8b 5d 00          	mov    0x0(%rbp),%rbx
+ 1c1:	48 85 db             	test   %rbx,%rbx
+ 1c4:	75 ea                	jne    1b0 <sdp_svcdb_collect+0x20>
+}
+ 1c6:	48 83 c4 08          	add    $0x8,%rsp
+ 1ca:	5b                   	pop    %rbx
+ 1cb:	5d                   	pop    %rbp
+ 1cc:	c3                   	retq   
+ 1cd:	0f 1f 00             	nopl   (%rax)
+			free(item);
+ 1d0:	48 89 c7             	mov    %rax,%rdi
+ 1d3:	e8 00 00 00 00       	callq  1d8 <sdp_svcdb_collect+0x48>
+				q->next = p->next;
+ 1d8:	48 8b 03             	mov    (%rbx),%rax
+ 1db:	48 89 45 00          	mov    %rax,0x0(%rbp)
+}
+ 1df:	48 83 c4 08          	add    $0x8,%rsp
+			free(p);
+ 1e3:	48 89 df             	mov    %rbx,%rdi
+}
+ 1e6:	5b                   	pop    %rbx
+ 1e7:	5d                   	pop    %rbp
+			free(p);
+ 1e8:	e9 00 00 00 00       	jmpq   1ed <sdp_svcdb_collect+0x5d>
+			free(item);
+ 1ed:	48 89 c7             	mov    %rax,%rdi
+				socket_index = p->next;
+ 1f0:	48 89 eb             	mov    %rbp,%rbx
+			free(item);
+ 1f3:	e8 00 00 00 00       	callq  1f8 <sdp_svcdb_collect+0x68>
+				socket_index = p->next;
+ 1f8:	48 8b 45 00          	mov    0x0(%rbp),%rax
+ 1fc:	48 89 05 00 00 00 00 	mov    %rax,0x0(%rip)        # 203 <sdp_svcdb_collect+0x73>
+ 203:	eb da                	jmp    1df <sdp_svcdb_collect+0x4f>
+ 205:	90                   	nop
+ 206:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+ 20d:	00 00 00 
+
+0000000000000210 <sdp_svcdb_set_collectable>:
+{
+ 210:	55                   	push   %rbp
+ 211:	89 f5                	mov    %esi,%ebp
+ 213:	53                   	push   %rbx
+ 214:	48 89 fb             	mov    %rdi,%rbx
+	sdp_indexed_t *item = malloc(sizeof(sdp_indexed_t));
+ 217:	bf 10 00 00 00       	mov    $0x10,%edi
+{
+ 21c:	48 83 ec 08          	sub    $0x8,%rsp
+	sdp_indexed_t *item = malloc(sizeof(sdp_indexed_t));
+ 220:	e8 00 00 00 00       	callq  225 <sdp_svcdb_set_collectable+0x15>
+	if (!item) {
+ 225:	48 85 c0             	test   %rax,%rax
+ 228:	74 21                	je     24b <sdp_svcdb_set_collectable+0x3b>
+	socket_index = sdp_list_insert_sorted(socket_index, item, compare_indices);
+ 22a:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 231 <sdp_svcdb_set_collectable+0x21>
+	item->sock = sock;
+ 231:	89 28                	mov    %ebp,(%rax)
+	socket_index = sdp_list_insert_sorted(socket_index, item, compare_indices);
+ 233:	ba 00 00 00 00       	mov    $0x0,%edx
+	item->record = record;
+ 238:	48 89 58 08          	mov    %rbx,0x8(%rax)
+	socket_index = sdp_list_insert_sorted(socket_index, item, compare_indices);
+ 23c:	48 89 c6             	mov    %rax,%rsi
+ 23f:	e8 00 00 00 00       	callq  244 <sdp_svcdb_set_collectable+0x34>
+ 244:	48 89 05 00 00 00 00 	mov    %rax,0x0(%rip)        # 24b <sdp_svcdb_set_collectable+0x3b>
+}
+ 24b:	48 83 c4 08          	add    $0x8,%rsp
+ 24f:	5b                   	pop    %rbx
+ 250:	5d                   	pop    %rbp
+ 251:	c3                   	retq   
+ 252:	0f 1f 40 00          	nopl   0x0(%rax)
+ 256:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+ 25d:	00 00 00 
+
+0000000000000260 <sdp_record_add>:
+{
+ 260:	55                   	push   %rbp
+ 261:	48 89 fd             	mov    %rdi,%rbp
+	service_db = sdp_list_insert_sorted(service_db, rec, record_sort);
+ 264:	ba 00 00 00 00       	mov    $0x0,%edx
+{
+ 269:	53                   	push   %rbx
+ 26a:	48 89 f3             	mov    %rsi,%rbx
+ 26d:	48 83 ec 08          	sub    $0x8,%rsp
+	service_db = sdp_list_insert_sorted(service_db, rec, record_sort);
+ 271:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 278 <sdp_record_add+0x18>
+ 278:	e8 00 00 00 00       	callq  27d <sdp_record_add+0x1d>
+	dev = malloc(sizeof(*dev));
+ 27d:	bf 0c 00 00 00       	mov    $0xc,%edi
+	service_db = sdp_list_insert_sorted(service_db, rec, record_sort);
+ 282:	48 89 05 00 00 00 00 	mov    %rax,0x0(%rip)        # 289 <sdp_record_add+0x29>
+	dev = malloc(sizeof(*dev));
+ 289:	e8 00 00 00 00       	callq  28e <sdp_record_add+0x2e>
+	if (!dev)
+ 28e:	48 85 c0             	test   %rax,%rax
+ 291:	74 2d                	je     2c0 <sdp_record_add+0x60>
+{
+	return memcmp(ba1, ba2, sizeof(bdaddr_t));
+}
+static inline void bacpy(bdaddr_t *dst, const bdaddr_t *src)
+{
+	memcpy(dst, src, sizeof(bdaddr_t));
+ 293:	8b 55 00             	mov    0x0(%rbp),%edx
+	access_db = sdp_list_insert_sorted(access_db, dev, access_sort);
+ 296:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 29d <sdp_record_add+0x3d>
+ 29d:	48 89 c6             	mov    %rax,%rsi
+ 2a0:	89 50 04             	mov    %edx,0x4(%rax)
+ 2a3:	0f b7 55 04          	movzwl 0x4(%rbp),%edx
+ 2a7:	66 89 50 08          	mov    %dx,0x8(%rax)
+	dev->handle = rec->handle;
+ 2ab:	8b 13                	mov    (%rbx),%edx
+ 2ad:	89 10                	mov    %edx,(%rax)
+	access_db = sdp_list_insert_sorted(access_db, dev, access_sort);
+ 2af:	ba 00 00 00 00       	mov    $0x0,%edx
+ 2b4:	e8 00 00 00 00       	callq  2b9 <sdp_record_add+0x59>
+ 2b9:	48 89 05 00 00 00 00 	mov    %rax,0x0(%rip)        # 2c0 <sdp_record_add+0x60>
+}
+ 2c0:	48 83 c4 08          	add    $0x8,%rsp
+ 2c4:	5b                   	pop    %rbx
+ 2c5:	5d                   	pop    %rbp
+ 2c6:	c3                   	retq   
+ 2c7:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+ 2ce:	00 00 
+
+00000000000002d0 <sdp_record_find>:
+
+/*
+ * Given a service record handle, find the record associated with it.
+ */
+sdp_record_t *sdp_record_find(uint32_t handle)
+{
+ 2d0:	48 83 ec 08          	sub    $0x8,%rsp
+	sdp_list_t *p = record_locate(handle);
+ 2d4:	e8 77 fd ff ff       	callq  50 <record_locate>
+
+	if (!p) {
+ 2d9:	48 85 c0             	test   %rax,%rax
+ 2dc:	74 12                	je     2f0 <sdp_record_find+0x20>
+		SDPDBG("Couldn't find record for : 0x%x", handle);
+		return 0;
+	}
+
+	return p->data;
+ 2de:	48 8b 40 08          	mov    0x8(%rax),%rax
+}
+ 2e2:	48 83 c4 08          	add    $0x8,%rsp
+ 2e6:	c3                   	retq   
+ 2e7:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+ 2ee:	00 00 
+		return 0;
+ 2f0:	31 c0                	xor    %eax,%eax
+ 2f2:	eb ee                	jmp    2e2 <sdp_record_find+0x12>
+ 2f4:	66 90                	xchg   %ax,%ax
+ 2f6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+ 2fd:	00 00 00 
+
+0000000000000300 <sdp_record_remove>:
+
+/*
+ * Given a service record handle, remove its record from the repository
+ */
+int sdp_record_remove(uint32_t handle)
+{
+ 300:	55                   	push   %rbp
+ 301:	53                   	push   %rbx
+ 302:	89 fb                	mov    %edi,%ebx
+ 304:	48 83 ec 08          	sub    $0x8,%rsp
+	sdp_list_t *p = record_locate(handle);
+ 308:	e8 43 fd ff ff       	callq  50 <record_locate>
+	sdp_record_t *r;
+	sdp_access_t *a;
+
+	if (!p) {
+ 30d:	48 85 c0             	test   %rax,%rax
+ 310:	74 69                	je     37b <sdp_record_remove+0x7b>
+		error("Remove : Couldn't find record for : 0x%x", handle);
+		return -1;
+	}
+
+	r = p->data;
+ 312:	48 8b 70 08          	mov    0x8(%rax),%rsi
+	if (r)
+ 316:	48 85 f6             	test   %rsi,%rsi
+ 319:	74 13                	je     32e <sdp_record_remove+0x2e>
+		service_db = sdp_list_remove(service_db, r);
+ 31b:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 322 <sdp_record_remove+0x22>
+ 322:	e8 00 00 00 00       	callq  327 <sdp_record_remove+0x27>
+ 327:	48 89 05 00 00 00 00 	mov    %rax,0x0(%rip)        # 32e <sdp_record_remove+0x2e>
+
+	p = access_locate(handle);
+ 32e:	89 df                	mov    %ebx,%edi
+ 330:	e8 ab fd ff ff       	callq  e0 <access_locate>
+	if (p == NULL || p->data == NULL)
+ 335:	48 85 c0             	test   %rax,%rax
+ 338:	74 36                	je     370 <sdp_record_remove+0x70>
+ 33a:	48 8b 58 08          	mov    0x8(%rax),%rbx
+		return 0;
+ 33e:	31 ed                	xor    %ebp,%ebp
+	if (p == NULL || p->data == NULL)
+ 340:	48 85 db             	test   %rbx,%rbx
+ 343:	74 1e                	je     363 <sdp_record_remove+0x63>
+
+	a = p->data;
+
+	access_db = sdp_list_remove(access_db, a);
+ 345:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 34c <sdp_record_remove+0x4c>
+ 34c:	48 89 de             	mov    %rbx,%rsi
+ 34f:	e8 00 00 00 00       	callq  354 <sdp_record_remove+0x54>
+	free(p);
+ 354:	48 89 df             	mov    %rbx,%rdi
+	access_db = sdp_list_remove(access_db, a);
+ 357:	48 89 05 00 00 00 00 	mov    %rax,0x0(%rip)        # 35e <sdp_record_remove+0x5e>
+	free(p);
+ 35e:	e8 00 00 00 00       	callq  363 <sdp_record_remove+0x63>
+	access_free(a);
+
+	return 0;
+}
+ 363:	48 83 c4 08          	add    $0x8,%rsp
+ 367:	89 e8                	mov    %ebp,%eax
+ 369:	5b                   	pop    %rbx
+ 36a:	5d                   	pop    %rbp
+ 36b:	c3                   	retq   
+ 36c:	0f 1f 40 00          	nopl   0x0(%rax)
+ 370:	48 83 c4 08          	add    $0x8,%rsp
+		return 0;
+ 374:	31 ed                	xor    %ebp,%ebp
+}
+ 376:	5b                   	pop    %rbx
+ 377:	89 e8                	mov    %ebp,%eax
+ 379:	5d                   	pop    %rbp
+ 37a:	c3                   	retq   
+		error("Remove : Couldn't find record for : 0x%x", handle);
+ 37b:	89 de                	mov    %ebx,%esi
+ 37d:	bf 00 00 00 00       	mov    $0x0,%edi
+		return -1;
+ 382:	bd ff ff ff ff       	mov    $0xffffffff,%ebp
+		error("Remove : Couldn't find record for : 0x%x", handle);
+ 387:	e8 00 00 00 00       	callq  38c <sdp_record_remove+0x8c>
+		return -1;
+ 38c:	eb d5                	jmp    363 <sdp_record_remove+0x63>
+ 38e:	66 90                	xchg   %ax,%ax
+
+0000000000000390 <sdp_svcdb_collect_all>:
+{
+ 390:	41 56                	push   %r14
+ 392:	41 55                	push   %r13
+ 394:	41 89 fd             	mov    %edi,%r13d
+ 397:	41 54                	push   %r12
+	for (p = socket_index, q = 0; p; ) {
+ 399:	45 31 e4             	xor    %r12d,%r12d
+{
+ 39c:	55                   	push   %rbp
+ 39d:	53                   	push   %rbx
+	for (p = socket_index, q = 0; p; ) {
+ 39e:	48 8b 1d 00 00 00 00 	mov    0x0(%rip),%rbx        # 3a5 <sdp_svcdb_collect_all+0x15>
+ 3a5:	48 85 db             	test   %rbx,%rbx
+ 3a8:	74 17                	je     3c1 <sdp_svcdb_collect_all+0x31>
+		sdp_indexed_t *item = p->data;
+ 3aa:	48 8b 6b 08          	mov    0x8(%rbx),%rbp
+		if (item->sock == sock) {
+ 3ae:	44 39 6d 00          	cmp    %r13d,0x0(%rbp)
+ 3b2:	74 1c                	je     3d0 <sdp_svcdb_collect_all+0x40>
+		} else if (item->sock > sock)
+ 3b4:	7f 0b                	jg     3c1 <sdp_svcdb_collect_all+0x31>
+			p = p->next;
+ 3b6:	49 89 dc             	mov    %rbx,%r12
+ 3b9:	48 8b 1b             	mov    (%rbx),%rbx
+	for (p = socket_index, q = 0; p; ) {
+ 3bc:	48 85 db             	test   %rbx,%rbx
+ 3bf:	75 e9                	jne    3aa <sdp_svcdb_collect_all+0x1a>
+}
+ 3c1:	5b                   	pop    %rbx
+ 3c2:	5d                   	pop    %rbp
+ 3c3:	41 5c                	pop    %r12
+ 3c5:	41 5d                	pop    %r13
+ 3c7:	41 5e                	pop    %r14
+ 3c9:	c3                   	retq   
+ 3ca:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+			sdp_record_remove(item->record->handle);
+ 3d0:	48 8b 45 08          	mov    0x8(%rbp),%rax
+			sdp_list_t *next = p->next;
+ 3d4:	4c 8b 33             	mov    (%rbx),%r14
+			sdp_record_remove(item->record->handle);
+ 3d7:	8b 38                	mov    (%rax),%edi
+ 3d9:	e8 00 00 00 00       	callq  3de <sdp_svcdb_collect_all+0x4e>
+			sdp_record_free(item->record);
+ 3de:	48 8b 7d 08          	mov    0x8(%rbp),%rdi
+ 3e2:	e8 00 00 00 00       	callq  3e7 <sdp_svcdb_collect_all+0x57>
+			free(item);
+ 3e7:	48 89 ef             	mov    %rbp,%rdi
+ 3ea:	e8 00 00 00 00       	callq  3ef <sdp_svcdb_collect_all+0x5f>
+			if (q)
+ 3ef:	4d 85 e4             	test   %r12,%r12
+ 3f2:	74 14                	je     408 <sdp_svcdb_collect_all+0x78>
+				q->next = next;
+ 3f4:	4d 89 34 24          	mov    %r14,(%r12)
+			free(p);
+ 3f8:	48 89 df             	mov    %rbx,%rdi
+			p = next;
+ 3fb:	4c 89 f3             	mov    %r14,%rbx
+			free(p);
+ 3fe:	e8 00 00 00 00       	callq  403 <sdp_svcdb_collect_all+0x73>
+ 403:	eb a0                	jmp    3a5 <sdp_svcdb_collect_all+0x15>
+ 405:	0f 1f 00             	nopl   (%rax)
+				socket_index = next;
+ 408:	4c 89 35 00 00 00 00 	mov    %r14,0x0(%rip)        # 40f <sdp_svcdb_collect_all+0x7f>
+ 40f:	eb e7                	jmp    3f8 <sdp_svcdb_collect_all+0x68>
+ 411:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+ 416:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+ 41d:	00 00 00 
+
+0000000000000420 <sdp_get_record_list>:
+ * Return a pointer to the linked list containing the records in sorted order
+ */
+sdp_list_t *sdp_get_record_list(void)
+{
+	return service_db;
+}
+ 420:	48 8b 05 00 00 00 00 	mov    0x0(%rip),%rax        # 427 <sdp_get_record_list+0x7>
+ 427:	c3                   	retq   
+ 428:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+ 42f:	00 
+
+0000000000000430 <sdp_check_access>:
+
+int sdp_check_access(uint32_t handle, bdaddr_t *device)
+{
+ 430:	55                   	push   %rbp
+ 431:	53                   	push   %rbx
+ 432:	48 89 f3             	mov    %rsi,%rbx
+ 435:	48 83 ec 28          	sub    $0x28,%rsp
+	sdp_list_t *p = access_locate(handle);
+ 439:	e8 a2 fc ff ff       	callq  e0 <access_locate>
+	sdp_access_t *a;
+
+	if (!p)
+ 43e:	48 85 c0             	test   %rax,%rax
+ 441:	0f 84 99 00 00 00    	je     4e0 <sdp_check_access+0xb0>
+		return 1;
+
+	a = p->data;
+ 447:	48 8b 40 08          	mov    0x8(%rax),%rax
+	if (!a)
+ 44b:	48 85 c0             	test   %rax,%rax
+ 44e:	0f 84 8c 00 00 00    	je     4e0 <sdp_check_access+0xb0>
+		return 1;
+
+	if (bacmp(&a->device, device) &&
+ 454:	48 8d 68 04          	lea    0x4(%rax),%rbp
+	return memcmp(ba1, ba2, sizeof(bdaddr_t));
+ 458:	ba 06 00 00 00       	mov    $0x6,%edx
+ 45d:	48 89 de             	mov    %rbx,%rsi
+ 460:	48 89 ef             	mov    %rbp,%rdi
+ 463:	e8 00 00 00 00       	callq  468 <sdp_check_access+0x38>
+ 468:	85 c0                	test   %eax,%eax
+ 46a:	74 74                	je     4e0 <sdp_check_access+0xb0>
+ 46c:	ba 06 00 00 00       	mov    $0x6,%edx
+ 471:	48 89 e6             	mov    %rsp,%rsi
+ 474:	48 89 ef             	mov    %rbp,%rdi
+			bacmp(&a->device, BDADDR_ANY) &&
+ 477:	c6 04 24 00          	movb   $0x0,(%rsp)
+ 47b:	c6 44 24 01 00       	movb   $0x0,0x1(%rsp)
+ 480:	c6 44 24 02 00       	movb   $0x0,0x2(%rsp)
+ 485:	c6 44 24 03 00       	movb   $0x0,0x3(%rsp)
+ 48a:	c6 44 24 04 00       	movb   $0x0,0x4(%rsp)
+ 48f:	c6 44 24 05 00       	movb   $0x0,0x5(%rsp)
+ 494:	e8 00 00 00 00       	callq  499 <sdp_check_access+0x69>
+	if (bacmp(&a->device, device) &&
+ 499:	85 c0                	test   %eax,%eax
+ 49b:	74 43                	je     4e0 <sdp_check_access+0xb0>
+ 49d:	48 8d 74 24 10       	lea    0x10(%rsp),%rsi
+ 4a2:	48 89 df             	mov    %rbx,%rdi
+ 4a5:	ba 06 00 00 00       	mov    $0x6,%edx
+			bacmp(device, BDADDR_ANY))
+ 4aa:	c6 44 24 10 00       	movb   $0x0,0x10(%rsp)
+ 4af:	c6 44 24 11 00       	movb   $0x0,0x11(%rsp)
+ 4b4:	c6 44 24 12 00       	movb   $0x0,0x12(%rsp)
+ 4b9:	c6 44 24 13 00       	movb   $0x0,0x13(%rsp)
+ 4be:	c6 44 24 14 00       	movb   $0x0,0x14(%rsp)
+ 4c3:	c6 44 24 15 00       	movb   $0x0,0x15(%rsp)
+ 4c8:	e8 00 00 00 00       	callq  4cd <sdp_check_access+0x9d>
+			bacmp(&a->device, BDADDR_ANY) &&
+ 4cd:	85 c0                	test   %eax,%eax
+ 4cf:	0f 94 c0             	sete   %al
+		return 0;
+
+	return 1;
+}
+ 4d2:	48 83 c4 28          	add    $0x28,%rsp
+ 4d6:	5b                   	pop    %rbx
+			bacmp(&a->device, BDADDR_ANY) &&
+ 4d7:	0f b6 c0             	movzbl %al,%eax
+}
+ 4da:	5d                   	pop    %rbp
+ 4db:	c3                   	retq   
+ 4dc:	0f 1f 40 00          	nopl   0x0(%rax)
+ 4e0:	48 83 c4 28          	add    $0x28,%rsp
+		return 1;
+ 4e4:	b8 01 00 00 00       	mov    $0x1,%eax
+}
+ 4e9:	5b                   	pop    %rbx
+ 4ea:	5d                   	pop    %rbp
+ 4eb:	c3                   	retq   
+ 4ec:	0f 1f 40 00          	nopl   0x0(%rax)
+
+00000000000004f0 <sdp_next_handle>:
+
+uint32_t sdp_next_handle(void)
+{
+ 4f0:	53                   	push   %rbx
+	uint32_t handle = 0x10000;
+ 4f1:	bb 00 00 01 00       	mov    $0x10000,%ebx
+
+	while (sdp_record_find(handle))
+ 4f6:	eb 12                	jmp    50a <sdp_next_handle+0x1a>
+ 4f8:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+ 4ff:	00 
+ 500:	48 83 78 08 00       	cmpq   $0x0,0x8(%rax)
+ 505:	74 0f                	je     516 <sdp_next_handle+0x26>
+		handle++;
+ 507:	83 c3 01             	add    $0x1,%ebx
+	sdp_list_t *p = record_locate(handle);
+ 50a:	89 df                	mov    %ebx,%edi
+ 50c:	e8 3f fb ff ff       	callq  50 <record_locate>
+	if (!p) {
+ 511:	48 85 c0             	test   %rax,%rax
+ 514:	75 ea                	jne    500 <sdp_next_handle+0x10>
+
+	return handle;
+}
+ 516:	89 d8                	mov    %ebx,%eax
+ 518:	5b                   	pop    %rbx
+ 519:	c3                   	retq   

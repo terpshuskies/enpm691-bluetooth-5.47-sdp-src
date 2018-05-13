@@ -1,0 +1,1731 @@
+
+bluetoothd-sdpd-service.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <class_supported>:
+
+	update_db_timestamp();
+}
+
+static bool class_supported(uint16_t class)
+{
+       0:	53                   	push   %rbx
+	sdp_list_t *list;
+	uuid_t uuid;
+
+	sdp_uuid16_create(&uuid, class);
+       1:	0f b7 f7             	movzwl %di,%esi
+{
+       4:	48 83 ec 20          	sub    $0x20,%rsp
+	sdp_uuid16_create(&uuid, class);
+       8:	48 89 e7             	mov    %rsp,%rdi
+       b:	e8 00 00 00 00       	callq  10 <class_supported+0x10>
+
+	for (list = sdp_get_record_list(); list; list = list->next) {
+      10:	e8 00 00 00 00       	callq  15 <class_supported+0x15>
+      15:	48 85 c0             	test   %rax,%rax
+      18:	48 89 c3             	mov    %rax,%rbx
+      1b:	75 0b                	jne    28 <class_supported+0x28>
+      1d:	eb 31                	jmp    50 <class_supported+0x50>
+      1f:	90                   	nop
+      20:	48 8b 1b             	mov    (%rbx),%rbx
+      23:	48 85 db             	test   %rbx,%rbx
+      26:	74 28                	je     50 <class_supported+0x50>
+		sdp_record_t *rec = list->data;
+
+		if (sdp_uuid_cmp(&rec->svclass, &uuid) == 0)
+      28:	48 8b 43 08          	mov    0x8(%rbx),%rax
+      2c:	48 89 e6             	mov    %rsp,%rsi
+      2f:	48 8d 78 18          	lea    0x18(%rax),%rdi
+      33:	e8 00 00 00 00       	callq  38 <class_supported+0x38>
+      38:	85 c0                	test   %eax,%eax
+      3a:	75 e4                	jne    20 <class_supported+0x20>
+			return true;
+	}
+
+	return false;
+}
+      3c:	48 83 c4 20          	add    $0x20,%rsp
+			return true;
+      40:	b8 01 00 00 00       	mov    $0x1,%eax
+}
+      45:	5b                   	pop    %rbx
+      46:	c3                   	retq   
+      47:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+      4e:	00 00 
+      50:	48 83 c4 20          	add    $0x20,%rsp
+	return false;
+      54:	31 c0                	xor    %eax,%eax
+}
+      56:	5b                   	pop    %rbx
+      57:	c3                   	retq   
+      58:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+      5f:	00 
+
+0000000000000060 <update_mps>:
+{
+	sdp_record_t *rec;
+	sdp_data_t *data;
+	uint64_t mpsd_feat, mpmd_feat;
+
+	if (!mps_handle)
+      60:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 66 <update_mps+0x6>
+      66:	85 ff                	test   %edi,%edi
+      68:	75 06                	jne    70 <update_mps+0x10>
+	if (mps_mpmd) {
+		mpmd_feat = mps_mpmd_features();
+		data = sdp_data_alloc(SDP_UINT64, &mpmd_feat);
+		sdp_attr_replace(rec, SDP_ATTR_MPMD_SCENARIOS, data);
+	}
+}
+      6a:	c3                   	retq   
+      6b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+{
+      70:	41 54                	push   %r12
+      72:	55                   	push   %rbp
+      73:	53                   	push   %rbx
+      74:	48 83 ec 10          	sub    $0x10,%rsp
+	rec = sdp_record_find(mps_handle);
+      78:	e8 00 00 00 00       	callq  7d <update_mps+0x1d>
+	if (!rec)
+      7d:	48 85 c0             	test   %rax,%rax
+	rec = sdp_record_find(mps_handle);
+      80:	49 89 c4             	mov    %rax,%r12
+	if (!rec)
+      83:	0f 84 64 01 00 00    	je     1ed <update_mps+0x18d>
+	if (!class_supported(HANDSFREE_AGW_SVCLASS_ID))
+      89:	bf 1f 11 00 00       	mov    $0x111f,%edi
+	uint64_t feat = MPS_MPSD_ALL;
+      8e:	48 bb ff ff ff ff 3f 	movabs $0x3fffffffff,%rbx
+      95:	00 00 00 
+	if (!class_supported(HANDSFREE_AGW_SVCLASS_ID))
+      98:	e8 63 ff ff ff       	callq  0 <class_supported>
+	if (!class_supported(HANDSFREE_SVCLASS_ID))
+      9d:	bf 1e 11 00 00       	mov    $0x111e,%edi
+	uint64_t feat = MPS_MPSD_ALL;
+      a2:	84 c0                	test   %al,%al
+      a4:	48 b8 aa aa fa aa 3f 	movabs $0x3faafaaaaa,%rax
+      ab:	00 00 00 
+      ae:	48 0f 44 d8          	cmove  %rax,%rbx
+	if (!class_supported(HANDSFREE_SVCLASS_ID))
+      b2:	e8 49 ff ff ff       	callq  0 <class_supported>
+      b7:	84 c0                	test   %al,%al
+      b9:	75 0d                	jne    c8 <update_mps+0x68>
+		feat &= ~MPS_MPSD_HFP_HF;
+      bb:	48 b8 55 55 f5 55 ff 	movabs $0xffffffff55f55555,%rax
+      c2:	ff ff ff 
+      c5:	48 21 c3             	and    %rax,%rbx
+	if (!class_supported(AUDIO_SOURCE_SVCLASS_ID))
+      c8:	bf 0a 11 00 00       	mov    $0x110a,%edi
+      cd:	e8 2e ff ff ff       	callq  0 <class_supported>
+      d2:	84 c0                	test   %al,%al
+      d4:	75 0d                	jne    e3 <update_mps+0x83>
+		feat &= ~MPS_MPSD_A2DP_SRC;
+      d6:	48 b8 aa ea af ff ea 	movabs $0xffffffeaffafeaaa,%rax
+      dd:	ff ff ff 
+      e0:	48 21 c3             	and    %rax,%rbx
+	if (!class_supported(AUDIO_SINK_SVCLASS_ID))
+      e3:	bf 0b 11 00 00       	mov    $0x110b,%edi
+      e8:	e8 13 ff ff ff       	callq  0 <class_supported>
+      ed:	84 c0                	test   %al,%al
+      ef:	75 0d                	jne    fe <update_mps+0x9e>
+		feat &= ~MPS_MPSD_A2DP_SNK;
+      f1:	48 b8 55 d5 5f ff d5 	movabs $0xffffffd5ff5fd555,%rax
+      f8:	ff ff ff 
+      fb:	48 21 c3             	and    %rax,%rbx
+	if (!class_supported(AV_REMOTE_CONTROLLER_SVCLASS_ID))
+      fe:	bf 0f 11 00 00       	mov    $0x110f,%edi
+     103:	e8 f8 fe ff ff       	callq  0 <class_supported>
+     108:	84 c0                	test   %al,%al
+     10a:	75 0d                	jne    119 <update_mps+0xb9>
+		feat &= ~MPS_MPSD_AVRCP_CT;
+     10c:	48 b8 55 d5 5f ff d5 	movabs $0xffffffd5ff5fd555,%rax
+     113:	ff ff ff 
+     116:	48 21 c3             	and    %rax,%rbx
+	if (!class_supported(AV_REMOTE_TARGET_SVCLASS_ID))
+     119:	bf 0c 11 00 00       	mov    $0x110c,%edi
+     11e:	e8 dd fe ff ff       	callq  0 <class_supported>
+     123:	84 c0                	test   %al,%al
+     125:	75 0d                	jne    134 <update_mps+0xd4>
+		feat &= ~MPS_MPSD_AVRCP_TG;
+     127:	48 b8 aa ea af ff ea 	movabs $0xffffffeaffafeaaa,%rax
+     12e:	ff ff ff 
+     131:	48 21 c3             	and    %rax,%rbx
+	if (!class_supported(DIALUP_NET_SVCLASS_ID))
+     134:	bf 03 11 00 00       	mov    $0x1103,%edi
+		feat &= ~MPS_MPSD_PAN_NAP;
+     139:	48 bd ff 7f 55 a9 fa 	movabs $0xfffffffaa9557fff,%rbp
+     140:	ff ff ff 
+	if (!class_supported(DIALUP_NET_SVCLASS_ID))
+     143:	e8 b8 fe ff ff       	callq  0 <class_supported>
+		feat &= ~MPS_MPSD_DUN_GW;
+     148:	48 89 da             	mov    %rbx,%rdx
+	if (!class_supported(NAP_SVCLASS_ID))
+     14b:	bf 16 11 00 00       	mov    $0x1116,%edi
+		feat &= ~MPS_MPSD_DUN_GW;
+     150:	48 81 e2 ff bf aa fe 	and    $0xfffffffffeaabfff,%rdx
+     157:	84 c0                	test   %al,%al
+     159:	48 0f 44 da          	cmove  %rdx,%rbx
+		feat &= ~MPS_MPSD_PAN_NAP;
+     15d:	48 21 dd             	and    %rbx,%rbp
+	feat &= ~MPS_MPSD_DUN_DT;
+     160:	48 81 e3 ff 7f 55 fd 	and    $0xfffffffffd557fff,%rbx
+	if (!class_supported(NAP_SVCLASS_ID))
+     167:	e8 94 fe ff ff       	callq  0 <class_supported>
+	if (!class_supported(PANU_SVCLASS_ID))
+     16c:	bf 15 11 00 00       	mov    $0x1115,%edi
+	feat &= ~MPS_MPSD_DUN_DT;
+     171:	84 c0                	test   %al,%al
+     173:	48 0f 45 eb          	cmovne %rbx,%rbp
+	if (!class_supported(PANU_SVCLASS_ID))
+     177:	e8 84 fe ff ff       	callq  0 <class_supported>
+     17c:	84 c0                	test   %al,%al
+     17e:	75 0d                	jne    18d <update_mps+0x12d>
+		feat &= ~MPS_MPSD_PAN_PANU;
+     180:	48 b8 ff ff ff 57 f5 	movabs $0xfffffff557ffffff,%rax
+     187:	ff ff ff 
+     18a:	48 21 c5             	and    %rax,%rbp
+	if (!class_supported(PBAP_PSE_SVCLASS_ID))
+     18d:	bf 2f 11 00 00       	mov    $0x112f,%edi
+     192:	e8 69 fe ff ff       	callq  0 <class_supported>
+     197:	84 c0                	test   %al,%al
+     199:	75 0d                	jne    1a8 <update_mps+0x148>
+		feat &= ~MPS_MPSD_PBAP_SRC;
+     19b:	48 b8 ff ff ff ff ef 	movabs $0xffffffefffffffff,%rax
+     1a2:	ff ff ff 
+     1a5:	48 21 c5             	and    %rax,%rbp
+	if (!class_supported(PBAP_PCE_SVCLASS_ID))
+     1a8:	bf 2e 11 00 00       	mov    $0x112e,%edi
+     1ad:	e8 4e fe ff ff       	callq  0 <class_supported>
+     1b2:	84 c0                	test   %al,%al
+     1b4:	75 0d                	jne    1c3 <update_mps+0x163>
+		feat &= ~MPS_MPSD_PBAP_CLI;
+     1b6:	48 b8 ff ff ff ff df 	movabs $0xffffffdfffffffff,%rax
+     1bd:	ff ff ff 
+     1c0:	48 21 c5             	and    %rax,%rbp
+	data = sdp_data_alloc(SDP_UINT64, &mpsd_feat);
+     1c3:	48 89 e6             	mov    %rsp,%rsi
+     1c6:	bf 0b 00 00 00       	mov    $0xb,%edi
+	mpsd_feat = mps_mpsd_features();
+     1cb:	48 89 2c 24          	mov    %rbp,(%rsp)
+	data = sdp_data_alloc(SDP_UINT64, &mpsd_feat);
+     1cf:	e8 00 00 00 00       	callq  1d4 <update_mps+0x174>
+	sdp_attr_replace(rec, SDP_ATTR_MPSD_SCENARIOS, data);
+     1d4:	be 00 02 00 00       	mov    $0x200,%esi
+     1d9:	48 89 c2             	mov    %rax,%rdx
+     1dc:	4c 89 e7             	mov    %r12,%rdi
+     1df:	e8 00 00 00 00       	callq  1e4 <update_mps+0x184>
+	if (mps_mpmd) {
+     1e4:	80 3d 00 00 00 00 00 	cmpb   $0x0,0x0(%rip)        # 1eb <update_mps+0x18b>
+     1eb:	75 13                	jne    200 <update_mps+0x1a0>
+}
+     1ed:	48 83 c4 10          	add    $0x10,%rsp
+     1f1:	5b                   	pop    %rbx
+     1f2:	5d                   	pop    %rbp
+     1f3:	41 5c                	pop    %r12
+     1f5:	c3                   	retq   
+     1f6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+     1fd:	00 00 00 
+	if (!class_supported(HANDSFREE_AGW_SVCLASS_ID))
+     200:	bf 1f 11 00 00       	mov    $0x111f,%edi
+     205:	e8 f6 fd ff ff       	callq  0 <class_supported>
+	uint64_t feat = MPS_MPMD_ALL;
+     20a:	3c 01                	cmp    $0x1,%al
+	if (!class_supported(HANDSFREE_SVCLASS_ID))
+     20c:	bf 1e 11 00 00       	mov    $0x111e,%edi
+	uint64_t feat = MPS_MPMD_ALL;
+     211:	48 19 db             	sbb    %rbx,%rbx
+     214:	48 83 e3 c0          	and    $0xffffffffffffffc0,%rbx
+     218:	48 81 c3 ff ff 07 00 	add    $0x7ffff,%rbx
+	if (!class_supported(HANDSFREE_SVCLASS_ID))
+     21f:	e8 dc fd ff ff       	callq  0 <class_supported>
+		feat &= ~MPS_MPMD_HFP_HF;
+     224:	48 89 da             	mov    %rbx,%rdx
+	if (!class_supported(AUDIO_SOURCE_SVCLASS_ID))
+     227:	bf 0a 11 00 00       	mov    $0x110a,%edi
+		feat &= ~MPS_MPMD_HFP_HF;
+     22c:	48 81 e2 6a fd ff ff 	and    $0xfffffffffffffd6a,%rdx
+     233:	84 c0                	test   %al,%al
+     235:	48 0f 44 da          	cmove  %rdx,%rbx
+	if (!class_supported(AUDIO_SOURCE_SVCLASS_ID))
+     239:	e8 c2 fd ff ff       	callq  0 <class_supported>
+		feat &= ~MPS_MPMD_A2DP_SRC;
+     23e:	48 89 da             	mov    %rbx,%rdx
+	if (!class_supported(AUDIO_SINK_SVCLASS_ID))
+     241:	bf 0b 11 00 00       	mov    $0x110b,%edi
+		feat &= ~MPS_MPMD_A2DP_SRC;
+     246:	48 81 e2 d5 2a fd ff 	and    $0xfffffffffffd2ad5,%rdx
+     24d:	84 c0                	test   %al,%al
+     24f:	48 0f 44 da          	cmove  %rdx,%rbx
+		feat &= ~MPS_MPMD_A2DP_SNK;
+     253:	48 89 dd             	mov    %rbx,%rbp
+     256:	80 e7 d7             	and    $0xd7,%bh
+	if (!class_supported(AUDIO_SINK_SVCLASS_ID))
+     259:	e8 a2 fd ff ff       	callq  0 <class_supported>
+		feat &= ~MPS_MPMD_A2DP_SNK;
+     25e:	48 81 e5 6a fd fa ff 	and    $0xfffffffffffafd6a,%rbp
+     265:	84 c0                	test   %al,%al
+	if (!class_supported(AV_REMOTE_CONTROLLER_SVCLASS_ID)) {
+     267:	bf 0f 11 00 00       	mov    $0x110f,%edi
+		feat &= ~MPS_MPMD_A2DP_SNK;
+     26c:	48 0f 45 eb          	cmovne %rbx,%rbp
+	if (!class_supported(AV_REMOTE_CONTROLLER_SVCLASS_ID)) {
+     270:	e8 8b fd ff ff       	callq  0 <class_supported>
+		feat &= ~MPS_MPMD_AVRCP_CT_ONLY;
+     275:	48 89 ea             	mov    %rbp,%rdx
+	if (!class_supported(AV_REMOTE_TARGET_SVCLASS_ID))
+     278:	bf 0c 11 00 00       	mov    $0x110c,%edi
+		feat &= ~MPS_MPMD_AVRCP_CT_ONLY;
+     27d:	48 81 e2 6a d5 fa ff 	and    $0xfffffffffffad56a,%rdx
+     284:	84 c0                	test   %al,%al
+     286:	48 0f 44 ea          	cmove  %rdx,%rbp
+	if (!class_supported(AV_REMOTE_TARGET_SVCLASS_ID))
+     28a:	e8 71 fd ff ff       	callq  0 <class_supported>
+		feat &= ~MPS_MPMD_AVRCP_TG;
+     28f:	48 89 ea             	mov    %rbp,%rdx
+		data = sdp_data_alloc(SDP_UINT64, &mpmd_feat);
+     292:	48 8d 74 24 08       	lea    0x8(%rsp),%rsi
+     297:	bf 0b 00 00 00       	mov    $0xb,%edi
+		feat &= ~MPS_MPMD_AVRCP_TG;
+     29c:	48 81 e2 d5 2a fd ff 	and    $0xfffffffffffd2ad5,%rdx
+     2a3:	84 c0                	test   %al,%al
+     2a5:	48 0f 44 ea          	cmove  %rdx,%rbp
+	feat &= ~MPS_MPMD_DUN_DT;
+     2a9:	48 81 e5 ff ff fa ff 	and    $0xfffffffffffaffff,%rbp
+     2b0:	48 89 6c 24 08       	mov    %rbp,0x8(%rsp)
+		data = sdp_data_alloc(SDP_UINT64, &mpmd_feat);
+     2b5:	e8 00 00 00 00       	callq  2ba <update_mps+0x25a>
+		sdp_attr_replace(rec, SDP_ATTR_MPMD_SCENARIOS, data);
+     2ba:	be 01 02 00 00       	mov    $0x201,%esi
+     2bf:	48 89 c2             	mov    %rax,%rdx
+     2c2:	4c 89 e7             	mov    %r12,%rdi
+     2c5:	e8 00 00 00 00       	callq  2ca <update_mps+0x26a>
+     2ca:	e9 1e ff ff ff       	jmpq   1ed <update_mps+0x18d>
+     2cf:	90                   	nop
+
+00000000000002d0 <extract_pdu_server>:
+
+/* FIXME: refactor for server-side */
+static sdp_record_t *extract_pdu_server(bdaddr_t *device, uint8_t *p,
+					unsigned int bufsize,
+					uint32_t handleExpected, int *scanned)
+{
+     2d0:	41 57                	push   %r15
+     2d2:	49 89 ff             	mov    %rdi,%r15
+     2d5:	41 56                	push   %r14
+     2d7:	4d 89 c6             	mov    %r8,%r14
+     2da:	41 55                	push   %r13
+     2dc:	41 54                	push   %r12
+     2de:	41 89 cc             	mov    %ecx,%r12d
+     2e1:	55                   	push   %rbp
+     2e2:	89 d5                	mov    %edx,%ebp
+     2e4:	53                   	push   %rbx
+     2e5:	48 89 f3             	mov    %rsi,%rbx
+	sdp_record_t *rec = NULL;
+	uint16_t attrId, lookAheadAttrId;
+	sdp_data_t *pAttr = NULL;
+	uint32_t handle = 0xffffffff;
+
+	*scanned = sdp_extract_seqtype(p, bufsize, &dtd, &seqlen);
+     2e8:	89 ee                	mov    %ebp,%esi
+     2ea:	48 89 df             	mov    %rbx,%rdi
+{
+     2ed:	48 83 ec 28          	sub    $0x28,%rsp
+	*scanned = sdp_extract_seqtype(p, bufsize, &dtd, &seqlen);
+     2f1:	48 8d 54 24 17       	lea    0x17(%rsp),%rdx
+     2f6:	48 8d 4c 24 18       	lea    0x18(%rsp),%rcx
+{
+     2fb:	4c 89 04 24          	mov    %r8,(%rsp)
+	int seqlen = 0;
+     2ff:	c7 44 24 18 00 00 00 	movl   $0x0,0x18(%rsp)
+     306:	00 
+	*scanned = sdp_extract_seqtype(p, bufsize, &dtd, &seqlen);
+     307:	e8 00 00 00 00       	callq  30c <extract_pdu_server+0x3c>
+	p += *scanned;
+     30c:	48 63 d0             	movslq %eax,%rdx
+	bufsize -= *scanned;
+     30f:	29 c5                	sub    %eax,%ebp
+	*scanned = sdp_extract_seqtype(p, bufsize, &dtd, &seqlen);
+     311:	41 89 06             	mov    %eax,(%r14)
+	p += *scanned;
+     314:	48 01 d3             	add    %rdx,%rbx
+
+	if (bufsize < sizeof(uint8_t) + sizeof(uint8_t)) {
+     317:	83 fd 01             	cmp    $0x1,%ebp
+     31a:	0f 86 a0 01 00 00    	jbe    4c0 <extract_pdu_server+0x1f0>
+	return le16_to_cpu(get_unaligned((const uint16_t *) ptr));
+}
+
+static inline uint16_t get_be16(const void *ptr)
+{
+	return be16_to_cpu(get_unaligned((const uint16_t *) ptr));
+     320:	44 0f b7 73 01       	movzwl 0x1(%rbx),%r14d
+     325:	66 41 c1 ce 08       	ror    $0x8,%r14w
+
+	lookAheadAttrId = get_be16(p + sizeof(uint8_t));
+
+	SDPDBG("Look ahead attr id : %d", lookAheadAttrId);
+
+	if (lookAheadAttrId == SDP_ATTR_RECORD_HANDLE) {
+     32a:	66 45 85 f6          	test   %r14w,%r14w
+     32e:	0f 84 ec 00 00 00    	je     420 <extract_pdu_server+0x150>
+		}
+		handle = get_be32(p + sizeof(uint8_t) + sizeof(uint16_t) +
+							sizeof(uint8_t));
+		SDPDBG("SvcRecHandle : 0x%x", handle);
+		rec = sdp_record_find(handle);
+	} else if (handleExpected != 0xffffffff)
+     334:	41 83 fc ff          	cmp    $0xffffffff,%r12d
+     338:	0f 84 32 01 00 00    	je     470 <extract_pdu_server+0x1a0>
+		rec = sdp_record_find(handleExpected);
+     33e:	44 89 e7             	mov    %r12d,%edi
+     341:	e8 00 00 00 00       	callq  346 <extract_pdu_server+0x76>
+	uint32_t handle = 0xffffffff;
+     346:	b9 ff ff ff ff       	mov    $0xffffffff,%ecx
+		rec = sdp_record_find(handleExpected);
+     34b:	49 89 c5             	mov    %rax,%r13
+
+	if (!rec) {
+     34e:	4d 85 ed             	test   %r13,%r13
+     351:	0f 84 2e 01 00 00    	je     485 <extract_pdu_server+0x1b5>
+		} else if (handleExpected != 0xffffffff) {
+			rec->handle = handleExpected;
+			sdp_record_add(device, rec);
+		}
+	} else {
+		sdp_list_free(rec->attrlist, (sdp_free_func_t) sdp_data_free);
+     357:	49 8b 7d 10          	mov    0x10(%r13),%rdi
+     35b:	be 00 00 00 00       	mov    $0x0,%esi
+     360:	e8 00 00 00 00       	callq  365 <extract_pdu_server+0x95>
+		rec->attrlist = NULL;
+     365:	49 c7 45 10 00 00 00 	movq   $0x0,0x10(%r13)
+     36c:	00 
+	}
+
+	while (localExtractedLength < seqlen) {
+     36d:	8b 44 24 18          	mov    0x18(%rsp),%eax
+     371:	85 c0                	test   %eax,%eax
+     373:	0f 8e 90 00 00 00    	jle    409 <extract_pdu_server+0x139>
+		int attrSize = sizeof(uint8_t);
+		int attrValueLength = 0;
+
+		if (bufsize < attrSize + sizeof(uint16_t)) {
+     379:	83 fd 02             	cmp    $0x2,%ebp
+		int attrValueLength = 0;
+     37c:	c7 44 24 1c 00 00 00 	movl   $0x0,0x1c(%rsp)
+     383:	00 
+		if (bufsize < attrSize + sizeof(uint16_t)) {
+     384:	0f 84 7f 00 00 00    	je     409 <extract_pdu_server+0x139>
+     38a:	45 31 e4             	xor    %r12d,%r12d
+     38d:	41 be ff ff ff ff    	mov    $0xffffffff,%r14d
+     393:	eb 3e                	jmp    3d3 <extract_pdu_server+0x103>
+     395:	0f 1f 00             	nopl   (%rax)
+		if (pAttr == NULL) {
+			SDPDBG("Terminating extraction of attributes");
+			break;
+		}
+		localExtractedLength += attrSize;
+		p += attrSize;
+     398:	48 63 d1             	movslq %ecx,%rdx
+		bufsize -= attrSize;
+		sdp_attr_replace(rec, attrId, pAttr);
+     39b:	41 0f b7 f7          	movzwl %r15w,%esi
+     39f:	4c 89 ef             	mov    %r13,%rdi
+		p += attrSize;
+     3a2:	48 01 d3             	add    %rdx,%rbx
+		sdp_attr_replace(rec, attrId, pAttr);
+     3a5:	48 89 c2             	mov    %rax,%rdx
+		localExtractedLength += attrSize;
+     3a8:	41 01 cc             	add    %ecx,%r12d
+		bufsize -= attrSize;
+     3ab:	29 cd                	sub    %ecx,%ebp
+		sdp_attr_replace(rec, attrId, pAttr);
+     3ad:	e8 00 00 00 00       	callq  3b2 <extract_pdu_server+0xe2>
+	while (localExtractedLength < seqlen) {
+     3b2:	8b 44 24 18          	mov    0x18(%rsp),%eax
+     3b6:	44 39 e0             	cmp    %r12d,%eax
+     3b9:	0f 8e 91 00 00 00    	jle    450 <extract_pdu_server+0x180>
+		if (bufsize < attrSize + sizeof(uint16_t)) {
+     3bf:	83 fd 02             	cmp    $0x2,%ebp
+		int attrValueLength = 0;
+     3c2:	c7 44 24 1c 00 00 00 	movl   $0x0,0x1c(%rsp)
+     3c9:	00 
+		if (bufsize < attrSize + sizeof(uint16_t)) {
+     3ca:	0f 86 80 00 00 00    	jbe    450 <extract_pdu_server+0x180>
+		extractStatus = 0;
+     3d0:	45 31 f6             	xor    %r14d,%r14d
+		dtd = *(uint8_t *) p;
+     3d3:	0f b6 03             	movzbl (%rbx),%eax
+		pAttr = sdp_extract_attr(p + attrSize, bufsize - attrSize,
+     3d6:	48 8d 7b 03          	lea    0x3(%rbx),%rdi
+     3da:	8d 75 fd             	lea    -0x3(%rbp),%esi
+     3dd:	48 8d 54 24 1c       	lea    0x1c(%rsp),%rdx
+     3e2:	4c 89 e9             	mov    %r13,%rcx
+     3e5:	44 0f b7 7b 01       	movzwl 0x1(%rbx),%r15d
+     3ea:	66 41 c1 cf 08       	ror    $0x8,%r15w
+		dtd = *(uint8_t *) p;
+     3ef:	88 44 24 17          	mov    %al,0x17(%rsp)
+		pAttr = sdp_extract_attr(p + attrSize, bufsize - attrSize,
+     3f3:	e8 00 00 00 00       	callq  3f8 <extract_pdu_server+0x128>
+		attrSize += attrValueLength;
+     3f8:	8b 7c 24 1c          	mov    0x1c(%rsp),%edi
+		if (pAttr == NULL) {
+     3fc:	48 85 c0             	test   %rax,%rax
+		attrSize += attrValueLength;
+     3ff:	8d 4f 03             	lea    0x3(%rdi),%ecx
+		if (pAttr == NULL) {
+     402:	75 94                	jne    398 <extract_pdu_server+0xc8>
+		SDPDBG("Extract PDU, seqLength: %d localExtractedLength: %d",
+					seqlen, localExtractedLength);
+	}
+
+	if (extractStatus == 0) {
+     404:	45 85 f6             	test   %r14d,%r14d
+     407:	74 3a                	je     443 <extract_pdu_server+0x173>
+#ifdef SDP_DEBUG
+		sdp_print_service_attr(rec->attrlist);
+#endif
+		*scanned += seqlen;
+	}
+	return rec;
+     409:	4c 89 e8             	mov    %r13,%rax
+}
+     40c:	48 83 c4 28          	add    $0x28,%rsp
+     410:	5b                   	pop    %rbx
+     411:	5d                   	pop    %rbp
+     412:	41 5c                	pop    %r12
+     414:	41 5d                	pop    %r13
+     416:	41 5e                	pop    %r14
+     418:	41 5f                	pop    %r15
+     41a:	c3                   	retq   
+     41b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+		return NULL;
+     420:	31 c0                	xor    %eax,%eax
+		if (bufsize < (sizeof(uint8_t) * 2) +
+     422:	83 fd 07             	cmp    $0x7,%ebp
+     425:	76 e5                	jbe    40c <extract_pdu_server+0x13c>
+#ifdef __GNUC__
+# if __GNUC_PREREQ (4, 3)
+static __inline unsigned int
+__bswap_32 (unsigned int __bsx)
+{
+  return __builtin_bswap32 (__bsx);
+     427:	8b 4b 04             	mov    0x4(%rbx),%ecx
+     42a:	0f c9                	bswap  %ecx
+		rec = sdp_record_find(handle);
+     42c:	89 cf                	mov    %ecx,%edi
+     42e:	89 4c 24 0c          	mov    %ecx,0xc(%rsp)
+     432:	e8 00 00 00 00       	callq  437 <extract_pdu_server+0x167>
+     437:	8b 4c 24 0c          	mov    0xc(%rsp),%ecx
+     43b:	49 89 c5             	mov    %rax,%r13
+     43e:	e9 0b ff ff ff       	jmpq   34e <extract_pdu_server+0x7e>
+     443:	8b 44 24 18          	mov    0x18(%rsp),%eax
+     447:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+     44e:	00 00 
+		*scanned += seqlen;
+     450:	48 8b 1c 24          	mov    (%rsp),%rbx
+     454:	01 03                	add    %eax,(%rbx)
+}
+     456:	48 83 c4 28          	add    $0x28,%rsp
+	return rec;
+     45a:	4c 89 e8             	mov    %r13,%rax
+}
+     45d:	5b                   	pop    %rbx
+     45e:	5d                   	pop    %rbp
+     45f:	41 5c                	pop    %r12
+     461:	41 5d                	pop    %r13
+     463:	41 5e                	pop    %r14
+     465:	41 5f                	pop    %r15
+     467:	c3                   	retq   
+     468:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+     46f:	00 
+		rec = sdp_record_alloc();
+     470:	e8 00 00 00 00       	callq  475 <extract_pdu_server+0x1a5>
+     475:	49 89 c5             	mov    %rax,%r13
+		rec->attrlist = NULL;
+     478:	48 c7 40 10 00 00 00 	movq   $0x0,0x10(%rax)
+     47f:	00 
+     480:	e9 e8 fe ff ff       	jmpq   36d <extract_pdu_server+0x9d>
+     485:	89 4c 24 0c          	mov    %ecx,0xc(%rsp)
+		rec = sdp_record_alloc();
+     489:	e8 00 00 00 00       	callq  48e <extract_pdu_server+0x1be>
+		if (lookAheadAttrId == SDP_ATTR_RECORD_HANDLE) {
+     48e:	66 45 85 f6          	test   %r14w,%r14w
+		rec = sdp_record_alloc();
+     492:	49 89 c5             	mov    %rax,%r13
+		rec->attrlist = NULL;
+     495:	48 c7 40 10 00 00 00 	movq   $0x0,0x10(%rax)
+     49c:	00 
+		if (lookAheadAttrId == SDP_ATTR_RECORD_HANDLE) {
+     49d:	8b 4c 24 0c          	mov    0xc(%rsp),%ecx
+     4a1:	74 24                	je     4c7 <extract_pdu_server+0x1f7>
+		} else if (handleExpected != 0xffffffff) {
+     4a3:	41 83 fc ff          	cmp    $0xffffffff,%r12d
+     4a7:	0f 84 c0 fe ff ff    	je     36d <extract_pdu_server+0x9d>
+			rec->handle = handleExpected;
+     4ad:	44 89 20             	mov    %r12d,(%rax)
+			sdp_record_add(device, rec);
+     4b0:	48 89 c6             	mov    %rax,%rsi
+     4b3:	4c 89 ff             	mov    %r15,%rdi
+     4b6:	e8 00 00 00 00       	callq  4bb <extract_pdu_server+0x1eb>
+     4bb:	e9 ad fe ff ff       	jmpq   36d <extract_pdu_server+0x9d>
+		return NULL;
+     4c0:	31 c0                	xor    %eax,%eax
+     4c2:	e9 45 ff ff ff       	jmpq   40c <extract_pdu_server+0x13c>
+			rec->handle = handle;
+     4c7:	89 08                	mov    %ecx,(%rax)
+			sdp_record_add(device, rec);
+     4c9:	48 89 c6             	mov    %rax,%rsi
+     4cc:	4c 89 ff             	mov    %r15,%rdi
+     4cf:	e8 00 00 00 00       	callq  4d4 <extract_pdu_server+0x204>
+     4d4:	e9 94 fe ff ff       	jmpq   36d <extract_pdu_server+0x9d>
+     4d9:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+00000000000004e0 <update_db_timestamp>:
+{
+     4e0:	48 83 ec 18          	sub    $0x18,%rsp
+	if (fixed_dbts) {
+     4e4:	8b 05 00 00 00 00    	mov    0x0(%rip),%eax        # 4ea <update_db_timestamp+0xa>
+		sdp_data_t *d = sdp_data_alloc(SDP_UINT32, &fixed_dbts);
+     4ea:	be 00 00 00 00       	mov    $0x0,%esi
+	if (fixed_dbts) {
+     4ef:	85 c0                	test   %eax,%eax
+     4f1:	75 1c                	jne    50f <update_db_timestamp+0x2f>
+	gettimeofday(&tm, NULL);
+     4f3:	31 f6                	xor    %esi,%esi
+     4f5:	bf 00 00 00 00       	mov    $0x0,%edi
+     4fa:	e8 00 00 00 00       	callq  4ff <update_db_timestamp+0x1f>
+	return (uint32_t) tm.tv_sec;
+     4ff:	48 8b 05 00 00 00 00 	mov    0x0(%rip),%rax        # 506 <update_db_timestamp+0x26>
+		sdp_data_t *d = sdp_data_alloc(SDP_UINT32, &dbts);
+     506:	48 8d 74 24 0c       	lea    0xc(%rsp),%rsi
+	return (uint32_t) tm.tv_sec;
+     50b:	89 44 24 0c          	mov    %eax,0xc(%rsp)
+		sdp_data_t *d = sdp_data_alloc(SDP_UINT32, &dbts);
+     50f:	bf 0a 00 00 00       	mov    $0xa,%edi
+     514:	e8 00 00 00 00       	callq  519 <update_db_timestamp+0x39>
+		sdp_attr_replace(server, SDP_ATTR_SVCDB_STATE, d);
+     519:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 520 <update_db_timestamp+0x40>
+     520:	48 89 c2             	mov    %rax,%rdx
+     523:	be 01 02 00 00       	mov    $0x201,%esi
+     528:	e8 00 00 00 00       	callq  52d <update_db_timestamp+0x4d>
+}
+     52d:	48 83 c4 18          	add    $0x18,%rsp
+     531:	c3                   	retq   
+     532:	0f 1f 40 00          	nopl   0x0(%rax)
+     536:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+     53d:	00 00 00 
+
+0000000000000540 <sdp_get_time>:
+{
+     540:	48 83 ec 08          	sub    $0x8,%rsp
+	gettimeofday(&tm, NULL);
+     544:	31 f6                	xor    %esi,%esi
+     546:	bf 00 00 00 00       	mov    $0x0,%edi
+     54b:	e8 00 00 00 00       	callq  550 <sdp_get_time+0x10>
+}
+     550:	8b 05 00 00 00 00    	mov    0x0(%rip),%eax        # 556 <sdp_get_time+0x16>
+     556:	48 83 c4 08          	add    $0x8,%rsp
+     55a:	c3                   	retq   
+     55b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+0000000000000560 <set_fixed_db_timestamp>:
+	fixed_dbts = dbts;
+     560:	89 3d 00 00 00 00    	mov    %edi,0x0(%rip)        # 566 <set_fixed_db_timestamp+0x6>
+     566:	c3                   	retq   
+     567:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+     56e:	00 00 
+
+0000000000000570 <register_public_browse_group>:
+{
+     570:	55                   	push   %rbp
+     571:	53                   	push   %rbx
+     572:	48 83 ec 58          	sub    $0x58,%rsp
+	sdp_record_t *browse = sdp_record_alloc();
+     576:	e8 00 00 00 00       	callq  57b <register_public_browse_group+0xb>
+	sdp_record_add(BDADDR_ANY, browse);
+     57b:	48 89 e7             	mov    %rsp,%rdi
+	browse->handle = SDP_SERVER_RECORD_HANDLE + 1;
+     57e:	c7 00 01 00 00 00    	movl   $0x1,(%rax)
+	sdp_record_t *browse = sdp_record_alloc();
+     584:	48 89 c3             	mov    %rax,%rbx
+	sdp_record_add(BDADDR_ANY, browse);
+     587:	48 89 c6             	mov    %rax,%rsi
+     58a:	c6 04 24 00          	movb   $0x0,(%rsp)
+     58e:	c6 44 24 01 00       	movb   $0x0,0x1(%rsp)
+     593:	c6 44 24 02 00       	movb   $0x0,0x2(%rsp)
+     598:	c6 44 24 03 00       	movb   $0x0,0x3(%rsp)
+     59d:	c6 44 24 04 00       	movb   $0x0,0x4(%rsp)
+     5a2:	c6 44 24 05 00       	movb   $0x0,0x5(%rsp)
+     5a7:	e8 00 00 00 00       	callq  5ac <register_public_browse_group+0x3c>
+	sdpdata = sdp_data_alloc(SDP_UINT32, &browse->handle);
+     5ac:	48 89 de             	mov    %rbx,%rsi
+     5af:	bf 0a 00 00 00       	mov    $0xa,%edi
+     5b4:	e8 00 00 00 00       	callq  5b9 <register_public_browse_group+0x49>
+	sdp_attr_add(browse, SDP_ATTR_RECORD_HANDLE, sdpdata);
+     5b9:	48 89 df             	mov    %rbx,%rdi
+     5bc:	48 89 c2             	mov    %rax,%rdx
+     5bf:	31 f6                	xor    %esi,%esi
+     5c1:	e8 00 00 00 00       	callq  5c6 <register_public_browse_group+0x56>
+	sdp_uuid16_create(&bgscid, BROWSE_GRP_DESC_SVCLASS_ID);
+     5c6:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+     5cb:	be 01 10 00 00       	mov    $0x1001,%esi
+     5d0:	e8 00 00 00 00       	callq  5d5 <register_public_browse_group+0x65>
+	browselist = sdp_list_append(0, &bgscid);
+     5d5:	48 8d 74 24 10       	lea    0x10(%rsp),%rsi
+     5da:	31 ff                	xor    %edi,%edi
+     5dc:	e8 00 00 00 00       	callq  5e1 <register_public_browse_group+0x71>
+ * specific to the most generic service class that this service
+ * conforms to.
+ */
+static inline int sdp_set_service_classes(sdp_record_t *rec, sdp_list_t *seq)
+{
+	return sdp_set_uuidseq_attr(rec, SDP_ATTR_SVCLASS_ID_LIST, seq);
+     5e1:	48 89 df             	mov    %rbx,%rdi
+     5e4:	48 89 c2             	mov    %rax,%rdx
+     5e7:	48 89 c5             	mov    %rax,%rbp
+     5ea:	be 01 00 00 00       	mov    $0x1,%esi
+     5ef:	e8 00 00 00 00       	callq  5f4 <register_public_browse_group+0x84>
+	sdp_list_free(browselist, 0);
+     5f4:	48 89 ef             	mov    %rbp,%rdi
+     5f7:	31 f6                	xor    %esi,%esi
+     5f9:	e8 00 00 00 00       	callq  5fe <register_public_browse_group+0x8e>
+	sdp_uuid16_create(&pbgid, PUBLIC_BROWSE_GROUP);
+     5fe:	48 8d 7c 24 30       	lea    0x30(%rsp),%rdi
+     603:	be 02 10 00 00       	mov    $0x1002,%esi
+     608:	e8 00 00 00 00       	callq  60d <register_public_browse_group+0x9d>
+	sdp_attr_add_new(browse, SDP_ATTR_GROUP_ID,
+     60d:	48 8d 4c 24 34       	lea    0x34(%rsp),%rcx
+     612:	48 89 df             	mov    %rbx,%rdi
+     615:	ba 19 00 00 00       	mov    $0x19,%edx
+     61a:	be 00 02 00 00       	mov    $0x200,%esi
+     61f:	e8 00 00 00 00       	callq  624 <register_public_browse_group+0xb4>
+}
+     624:	48 83 c4 58          	add    $0x58,%rsp
+     628:	5b                   	pop    %rbx
+     629:	5d                   	pop    %rbp
+     62a:	c3                   	retq   
+     62b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+0000000000000630 <register_server_service>:
+{
+     630:	41 54                	push   %r12
+     632:	55                   	push   %rbp
+     633:	53                   	push   %rbx
+     634:	48 83 ec 40          	sub    $0x40,%rsp
+	server = sdp_record_alloc();
+     638:	e8 00 00 00 00       	callq  63d <register_server_service+0xd>
+	sdp_record_add(BDADDR_ANY, server);
+     63d:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+	server->handle = SDP_SERVER_RECORD_HANDLE;
+     642:	c7 00 00 00 00 00    	movl   $0x0,(%rax)
+	server->pattern = NULL;
+     648:	48 c7 40 08 00 00 00 	movq   $0x0,0x8(%rax)
+     64f:	00 
+	sdp_record_add(BDADDR_ANY, server);
+     650:	48 89 c6             	mov    %rax,%rsi
+	server = sdp_record_alloc();
+     653:	48 89 05 00 00 00 00 	mov    %rax,0x0(%rip)        # 65a <register_server_service+0x2a>
+	sdp_record_add(BDADDR_ANY, server);
+     65a:	c6 44 24 10 00       	movb   $0x0,0x10(%rsp)
+     65f:	c6 44 24 11 00       	movb   $0x0,0x11(%rsp)
+     664:	c6 44 24 12 00       	movb   $0x0,0x12(%rsp)
+     669:	c6 44 24 13 00       	movb   $0x0,0x13(%rsp)
+     66e:	c6 44 24 14 00       	movb   $0x0,0x14(%rsp)
+     673:	c6 44 24 15 00       	movb   $0x0,0x15(%rsp)
+     678:	e8 00 00 00 00       	callq  67d <register_server_service+0x4d>
+	sdp_attr_add(server, SDP_ATTR_RECORD_HANDLE,
+     67d:	48 8b 35 00 00 00 00 	mov    0x0(%rip),%rsi        # 684 <register_server_service+0x54>
+     684:	bf 0a 00 00 00       	mov    $0xa,%edi
+     689:	e8 00 00 00 00       	callq  68e <register_server_service+0x5e>
+     68e:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 695 <register_server_service+0x65>
+     695:	48 89 c2             	mov    %rax,%rdx
+     698:	31 f6                	xor    %esi,%esi
+     69a:	e8 00 00 00 00       	callq  69f <register_server_service+0x6f>
+	sdp_uuid16_create(&classID, SDP_SERVER_SVCLASS_ID);
+     69f:	48 8d 7c 24 20       	lea    0x20(%rsp),%rdi
+     6a4:	be 00 10 00 00       	mov    $0x1000,%esi
+     6a9:	e8 00 00 00 00       	callq  6ae <register_server_service+0x7e>
+	classIDList = sdp_list_append(0, &classID);
+     6ae:	48 8d 74 24 20       	lea    0x20(%rsp),%rsi
+     6b3:	31 ff                	xor    %edi,%edi
+     6b5:	e8 00 00 00 00       	callq  6ba <register_server_service+0x8a>
+     6ba:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 6c1 <register_server_service+0x91>
+     6c1:	48 89 c2             	mov    %rax,%rdx
+     6c4:	48 89 c3             	mov    %rax,%rbx
+     6c7:	be 01 00 00 00       	mov    $0x1,%esi
+     6cc:	e8 00 00 00 00       	callq  6d1 <register_server_service+0xa1>
+	sdp_list_free(classIDList, 0);
+     6d1:	31 f6                	xor    %esi,%esi
+     6d3:	48 89 df             	mov    %rbx,%rdi
+     6d6:	e8 00 00 00 00       	callq  6db <register_server_service+0xab>
+	versions = malloc(sdpServerVnumEntries * sizeof(void *));
+     6db:	bf 08 00 00 00       	mov    $0x8,%edi
+     6e0:	e8 00 00 00 00       	callq  6e5 <register_server_service+0xb5>
+	versionDTDs = malloc(sdpServerVnumEntries * sizeof(void *));
+     6e5:	bf 08 00 00 00       	mov    $0x8,%edi
+	versions = malloc(sdpServerVnumEntries * sizeof(void *));
+     6ea:	48 89 c3             	mov    %rax,%rbx
+	versionDTDs = malloc(sdpServerVnumEntries * sizeof(void *));
+     6ed:	e8 00 00 00 00       	callq  6f2 <register_server_service+0xc2>
+		uint16_t *version = malloc(sizeof(uint16_t));
+     6f2:	bf 02 00 00 00       	mov    $0x2,%edi
+	versionDTDs = malloc(sdpServerVnumEntries * sizeof(void *));
+     6f7:	48 89 c5             	mov    %rax,%rbp
+	dtd = SDP_UINT16;
+     6fa:	c6 44 24 0f 09       	movb   $0x9,0xf(%rsp)
+		uint16_t *version = malloc(sizeof(uint16_t));
+     6ff:	e8 00 00 00 00       	callq  704 <register_server_service+0xd4>
+		*version = (*version << 8);
+     704:	ba 00 01 00 00       	mov    $0x100,%edx
+		versions[i] = version;
+     709:	48 89 03             	mov    %rax,(%rbx)
+	pData = sdp_seq_alloc(versionDTDs, versions, sdpServerVnumEntries);
+     70c:	48 89 de             	mov    %rbx,%rsi
+		*version = (*version << 8);
+     70f:	66 89 10             	mov    %dx,(%rax)
+		versionDTDs[i] = &dtd;
+     712:	48 8d 44 24 0f       	lea    0xf(%rsp),%rax
+	pData = sdp_seq_alloc(versionDTDs, versions, sdpServerVnumEntries);
+     717:	ba 01 00 00 00       	mov    $0x1,%edx
+     71c:	48 89 ef             	mov    %rbp,%rdi
+		versionDTDs[i] = &dtd;
+     71f:	48 89 45 00          	mov    %rax,0x0(%rbp)
+	pData = sdp_seq_alloc(versionDTDs, versions, sdpServerVnumEntries);
+     723:	e8 00 00 00 00       	callq  728 <register_server_service+0xf8>
+		free(versions[i]);
+     728:	48 8b 3b             	mov    (%rbx),%rdi
+	pData = sdp_seq_alloc(versionDTDs, versions, sdpServerVnumEntries);
+     72b:	49 89 c4             	mov    %rax,%r12
+		free(versions[i]);
+     72e:	e8 00 00 00 00       	callq  733 <register_server_service+0x103>
+	free(versions);
+     733:	48 89 df             	mov    %rbx,%rdi
+     736:	e8 00 00 00 00       	callq  73b <register_server_service+0x10b>
+	free(versionDTDs);
+     73b:	48 89 ef             	mov    %rbp,%rdi
+     73e:	e8 00 00 00 00       	callq  743 <register_server_service+0x113>
+	sdp_attr_add(server, SDP_ATTR_VERSION_NUM_LIST, pData);
+     743:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 74a <register_server_service+0x11a>
+     74a:	4c 89 e2             	mov    %r12,%rdx
+     74d:	be 00 02 00 00       	mov    $0x200,%esi
+     752:	e8 00 00 00 00       	callq  757 <register_server_service+0x127>
+	update_db_timestamp();
+     757:	e8 84 fd ff ff       	callq  4e0 <update_db_timestamp>
+}
+     75c:	48 83 c4 40          	add    $0x40,%rsp
+     760:	5b                   	pop    %rbx
+     761:	5d                   	pop    %rbp
+     762:	41 5c                	pop    %r12
+     764:	c3                   	retq   
+     765:	90                   	nop
+     766:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+     76d:	00 00 00 
+
+0000000000000770 <register_device_id>:
+{
+     770:	55                   	push   %rbp
+     771:	53                   	push   %rbx
+     772:	48 81 ec a8 00 00 00 	sub    $0xa8,%rsp
+     779:	66 89 54 24 14       	mov    %dx,0x14(%rsp)
+	const uint16_t spec = 0x0103;
+     77e:	ba 03 01 00 00       	mov    $0x103,%edx
+{
+     783:	66 89 7c 24 1c       	mov    %di,0x1c(%rsp)
+     788:	66 89 74 24 18       	mov    %si,0x18(%rsp)
+     78d:	66 89 4c 24 10       	mov    %cx,0x10(%rsp)
+	const uint16_t spec = 0x0103;
+     792:	66 89 54 24 2e       	mov    %dx,0x2e(%rsp)
+	const uint8_t primary = 1;
+     797:	c6 44 24 2d 01       	movb   $0x1,0x2d(%rsp)
+	sdp_record_t *record = sdp_record_alloc();
+     79c:	e8 00 00 00 00       	callq  7a1 <register_device_id+0x31>
+	DBG("Adding device id record for %04x:%04x:%04x:%04x",
+     7a1:	f6 05 00 00 00 00 01 	testb  $0x1,0x0(%rip)        # 7a8 <register_device_id+0x38>
+	sdp_record_t *record = sdp_record_alloc();
+     7a8:	48 89 c3             	mov    %rax,%rbx
+	DBG("Adding device id record for %04x:%04x:%04x:%04x",
+     7ab:	74 38                	je     7e5 <register_device_id+0x75>
+     7ad:	0f b7 44 24 10       	movzwl 0x10(%rsp),%eax
+     7b2:	44 0f b7 4c 24 18    	movzwl 0x18(%rsp),%r9d
+     7b8:	b9 00 00 00 00       	mov    $0x0,%ecx
+     7bd:	44 0f b7 44 24 1c    	movzwl 0x1c(%rsp),%r8d
+     7c3:	ba 00 00 00 00       	mov    $0x0,%edx
+     7c8:	be 00 00 00 00       	mov    $0x0,%esi
+     7cd:	bf ff ff 00 00       	mov    $0xffff,%edi
+     7d2:	89 44 24 08          	mov    %eax,0x8(%rsp)
+     7d6:	0f b7 44 24 14       	movzwl 0x14(%rsp),%eax
+     7db:	89 04 24             	mov    %eax,(%rsp)
+     7de:	31 c0                	xor    %eax,%eax
+     7e0:	e8 00 00 00 00       	callq  7e5 <register_device_id+0x75>
+	record->handle = sdp_next_handle();
+     7e5:	e8 00 00 00 00       	callq  7ea <register_device_id+0x7a>
+	sdp_record_add(BDADDR_ANY, record);
+     7ea:	48 8d 7c 24 30       	lea    0x30(%rsp),%rdi
+	record->handle = sdp_next_handle();
+     7ef:	89 03                	mov    %eax,(%rbx)
+	sdp_record_add(BDADDR_ANY, record);
+     7f1:	48 89 de             	mov    %rbx,%rsi
+     7f4:	c6 44 24 30 00       	movb   $0x0,0x30(%rsp)
+     7f9:	c6 44 24 31 00       	movb   $0x0,0x31(%rsp)
+     7fe:	c6 44 24 32 00       	movb   $0x0,0x32(%rsp)
+     803:	c6 44 24 33 00       	movb   $0x0,0x33(%rsp)
+     808:	c6 44 24 34 00       	movb   $0x0,0x34(%rsp)
+     80d:	c6 44 24 35 00       	movb   $0x0,0x35(%rsp)
+     812:	e8 00 00 00 00       	callq  817 <register_device_id+0xa7>
+	sdp_data = sdp_data_alloc(SDP_UINT32, &record->handle);
+     817:	48 89 de             	mov    %rbx,%rsi
+     81a:	bf 0a 00 00 00       	mov    $0xa,%edi
+     81f:	e8 00 00 00 00       	callq  824 <register_device_id+0xb4>
+	sdp_attr_add(record, SDP_ATTR_RECORD_HANDLE, sdp_data);
+     824:	31 f6                	xor    %esi,%esi
+     826:	48 89 c2             	mov    %rax,%rdx
+     829:	48 89 df             	mov    %rbx,%rdi
+     82c:	e8 00 00 00 00       	callq  831 <register_device_id+0xc1>
+	sdp_uuid16_create(&class_uuid, PNP_INFO_SVCLASS_ID);
+     831:	48 8d 7c 24 40       	lea    0x40(%rsp),%rdi
+     836:	be 00 12 00 00       	mov    $0x1200,%esi
+     83b:	e8 00 00 00 00       	callq  840 <register_device_id+0xd0>
+	class_list = sdp_list_append(0, &class_uuid);
+     840:	48 8d 74 24 40       	lea    0x40(%rsp),%rsi
+     845:	31 ff                	xor    %edi,%edi
+     847:	e8 00 00 00 00       	callq  84c <register_device_id+0xdc>
+     84c:	48 89 df             	mov    %rbx,%rdi
+     84f:	48 89 c2             	mov    %rax,%rdx
+     852:	48 89 c5             	mov    %rax,%rbp
+     855:	be 01 00 00 00       	mov    $0x1,%esi
+     85a:	e8 00 00 00 00       	callq  85f <register_device_id+0xef>
+	sdp_list_free(class_list, NULL);
+     85f:	31 f6                	xor    %esi,%esi
+     861:	48 89 ef             	mov    %rbp,%rdi
+     864:	e8 00 00 00 00       	callq  869 <register_device_id+0xf9>
+	sdp_uuid16_create(&group_uuid, PUBLIC_BROWSE_GROUP);
+     869:	48 8d 7c 24 60       	lea    0x60(%rsp),%rdi
+     86e:	be 02 10 00 00       	mov    $0x1002,%esi
+     873:	e8 00 00 00 00       	callq  878 <register_device_id+0x108>
+	group_list = sdp_list_append(NULL, &group_uuid);
+     878:	48 8d 74 24 60       	lea    0x60(%rsp),%rsi
+     87d:	31 ff                	xor    %edi,%edi
+     87f:	e8 00 00 00 00       	callq  884 <register_device_id+0x114>
+ * A service can belong to one or more service groups
+ * and the list comprises such group identifiers (UUIDs)
+ */
+static inline int sdp_set_browse_groups(sdp_record_t *rec, sdp_list_t *seq)
+{
+	return sdp_set_uuidseq_attr(rec, SDP_ATTR_BROWSE_GRP_LIST, seq);
+     884:	48 89 df             	mov    %rbx,%rdi
+     887:	48 89 c2             	mov    %rax,%rdx
+     88a:	48 89 c5             	mov    %rax,%rbp
+     88d:	be 05 00 00 00       	mov    $0x5,%esi
+     892:	e8 00 00 00 00       	callq  897 <register_device_id+0x127>
+	sdp_list_free(group_list, NULL);
+     897:	31 f6                	xor    %esi,%esi
+     899:	48 89 ef             	mov    %rbp,%rdi
+     89c:	e8 00 00 00 00       	callq  8a1 <register_device_id+0x131>
+	sdp_uuid16_create(&profile.uuid, PNP_INFO_PROFILE_ID);
+     8a1:	48 8d bc 24 80 00 00 	lea    0x80(%rsp),%rdi
+     8a8:	00 
+     8a9:	be 00 12 00 00       	mov    $0x1200,%esi
+     8ae:	e8 00 00 00 00       	callq  8b3 <register_device_id+0x143>
+	profile_list = sdp_list_append(NULL, &profile);
+     8b3:	48 8d b4 24 80 00 00 	lea    0x80(%rsp),%rsi
+     8ba:	00 
+     8bb:	31 ff                	xor    %edi,%edi
+	profile.version = spec;
+     8bd:	b8 03 01 00 00       	mov    $0x103,%eax
+     8c2:	66 89 84 24 94 00 00 	mov    %ax,0x94(%rsp)
+     8c9:	00 
+	profile_list = sdp_list_append(NULL, &profile);
+     8ca:	e8 00 00 00 00       	callq  8cf <register_device_id+0x15f>
+	sdp_set_profile_descs(record, profile_list);
+     8cf:	48 89 df             	mov    %rbx,%rdi
+	profile_list = sdp_list_append(NULL, &profile);
+     8d2:	48 89 c5             	mov    %rax,%rbp
+	sdp_set_profile_descs(record, profile_list);
+     8d5:	48 89 c6             	mov    %rax,%rsi
+     8d8:	e8 00 00 00 00       	callq  8dd <register_device_id+0x16d>
+	sdp_list_free(profile_list, NULL);
+     8dd:	31 f6                	xor    %esi,%esi
+     8df:	48 89 ef             	mov    %rbp,%rdi
+     8e2:	e8 00 00 00 00       	callq  8e7 <register_device_id+0x177>
+	spec_data = sdp_data_alloc(SDP_UINT16, &spec);
+     8e7:	48 8d 74 24 2e       	lea    0x2e(%rsp),%rsi
+     8ec:	bf 09 00 00 00       	mov    $0x9,%edi
+     8f1:	e8 00 00 00 00       	callq  8f6 <register_device_id+0x186>
+	sdp_attr_add(record, 0x0200, spec_data);
+     8f6:	48 89 df             	mov    %rbx,%rdi
+     8f9:	48 89 c2             	mov    %rax,%rdx
+     8fc:	be 00 02 00 00       	mov    $0x200,%esi
+     901:	e8 00 00 00 00       	callq  906 <register_device_id+0x196>
+	vendor_data = sdp_data_alloc(SDP_UINT16, &vendor);
+     906:	48 8d 74 24 18       	lea    0x18(%rsp),%rsi
+     90b:	bf 09 00 00 00       	mov    $0x9,%edi
+     910:	e8 00 00 00 00       	callq  915 <register_device_id+0x1a5>
+	sdp_attr_add(record, 0x0201, vendor_data);
+     915:	48 89 df             	mov    %rbx,%rdi
+     918:	48 89 c2             	mov    %rax,%rdx
+     91b:	be 01 02 00 00       	mov    $0x201,%esi
+     920:	e8 00 00 00 00       	callq  925 <register_device_id+0x1b5>
+	product_data = sdp_data_alloc(SDP_UINT16, &product);
+     925:	48 8d 74 24 14       	lea    0x14(%rsp),%rsi
+     92a:	bf 09 00 00 00       	mov    $0x9,%edi
+     92f:	e8 00 00 00 00       	callq  934 <register_device_id+0x1c4>
+	sdp_attr_add(record, 0x0202, product_data);
+     934:	48 89 df             	mov    %rbx,%rdi
+     937:	48 89 c2             	mov    %rax,%rdx
+     93a:	be 02 02 00 00       	mov    $0x202,%esi
+     93f:	e8 00 00 00 00       	callq  944 <register_device_id+0x1d4>
+	version_data = sdp_data_alloc(SDP_UINT16, &version);
+     944:	48 8d 74 24 10       	lea    0x10(%rsp),%rsi
+     949:	bf 09 00 00 00       	mov    $0x9,%edi
+     94e:	e8 00 00 00 00       	callq  953 <register_device_id+0x1e3>
+	sdp_attr_add(record, 0x0203, version_data);
+     953:	48 89 df             	mov    %rbx,%rdi
+     956:	48 89 c2             	mov    %rax,%rdx
+     959:	be 03 02 00 00       	mov    $0x203,%esi
+     95e:	e8 00 00 00 00       	callq  963 <register_device_id+0x1f3>
+	primary_data = sdp_data_alloc(SDP_BOOL, &primary);
+     963:	48 8d 74 24 2d       	lea    0x2d(%rsp),%rsi
+     968:	bf 28 00 00 00       	mov    $0x28,%edi
+     96d:	e8 00 00 00 00       	callq  972 <register_device_id+0x202>
+	sdp_attr_add(record, 0x0204, primary_data);
+     972:	48 89 df             	mov    %rbx,%rdi
+     975:	48 89 c2             	mov    %rax,%rdx
+     978:	be 04 02 00 00       	mov    $0x204,%esi
+     97d:	e8 00 00 00 00       	callq  982 <register_device_id+0x212>
+	source_data = sdp_data_alloc(SDP_UINT16, &source);
+     982:	48 8d 74 24 1c       	lea    0x1c(%rsp),%rsi
+     987:	bf 09 00 00 00       	mov    $0x9,%edi
+     98c:	e8 00 00 00 00       	callq  991 <register_device_id+0x221>
+	sdp_attr_add(record, 0x0205, source_data);
+     991:	48 89 df             	mov    %rbx,%rdi
+     994:	48 89 c2             	mov    %rax,%rdx
+     997:	be 05 02 00 00       	mov    $0x205,%esi
+     99c:	e8 00 00 00 00       	callq  9a1 <register_device_id+0x231>
+	update_db_timestamp();
+     9a1:	e8 3a fb ff ff       	callq  4e0 <update_db_timestamp>
+}
+     9a6:	48 81 c4 a8 00 00 00 	add    $0xa8,%rsp
+     9ad:	5b                   	pop    %rbx
+     9ae:	5d                   	pop    %rbp
+     9af:	c3                   	retq   
+
+00000000000009b0 <add_record_to_server>:
+{
+     9b0:	55                   	push   %rbp
+     9b1:	48 89 fd             	mov    %rdi,%rbp
+     9b4:	53                   	push   %rbx
+     9b5:	48 89 f3             	mov    %rsi,%rbx
+     9b8:	48 83 ec 28          	sub    $0x28,%rsp
+	if (rec->handle == 0xffffffff) {
+     9bc:	8b 3e                	mov    (%rsi),%edi
+     9be:	83 ff ff             	cmp    $0xffffffff,%edi
+     9c1:	0f 84 d1 00 00 00    	je     a98 <add_record_to_server+0xe8>
+		if (sdp_record_find(rec->handle))
+     9c7:	e8 00 00 00 00       	callq  9cc <add_record_to_server+0x1c>
+     9cc:	48 85 c0             	test   %rax,%rax
+			return -EEXIST;
+     9cf:	ba ef ff ff ff       	mov    $0xffffffef,%edx
+		if (sdp_record_find(rec->handle))
+     9d4:	0f 85 b2 00 00 00    	jne    a8c <add_record_to_server+0xdc>
+	DBG("Adding record with handle 0x%05x", rec->handle);
+     9da:	f6 05 00 00 00 00 01 	testb  $0x1,0x0(%rip)        # 9e1 <add_record_to_server+0x31>
+     9e1:	0f 85 d1 00 00 00    	jne    ab8 <add_record_to_server+0x108>
+	sdp_record_add(src, rec);
+     9e7:	48 89 de             	mov    %rbx,%rsi
+     9ea:	48 89 ef             	mov    %rbp,%rdi
+     9ed:	e8 00 00 00 00       	callq  9f2 <add_record_to_server+0x42>
+	data = sdp_data_alloc(SDP_UINT32, &rec->handle);
+     9f2:	48 89 de             	mov    %rbx,%rsi
+     9f5:	bf 0a 00 00 00       	mov    $0xa,%edi
+     9fa:	e8 00 00 00 00       	callq  9ff <add_record_to_server+0x4f>
+	sdp_attr_replace(rec, SDP_ATTR_RECORD_HANDLE, data);
+     9ff:	31 f6                	xor    %esi,%esi
+     a01:	48 89 c2             	mov    %rax,%rdx
+     a04:	48 89 df             	mov    %rbx,%rdi
+     a07:	e8 00 00 00 00       	callq  a0c <add_record_to_server+0x5c>
+	if (sdp_data_get(rec, SDP_ATTR_BROWSE_GRP_LIST) == NULL) {
+     a0c:	be 05 00 00 00       	mov    $0x5,%esi
+     a11:	48 89 df             	mov    %rbx,%rdi
+     a14:	e8 00 00 00 00       	callq  a19 <add_record_to_server+0x69>
+     a19:	48 85 c0             	test   %rax,%rax
+     a1c:	0f 84 b9 00 00 00    	je     adb <add_record_to_server+0x12b>
+	for (pattern = rec->pattern; pattern; pattern = pattern->next) {
+     a22:	48 8b 5b 08          	mov    0x8(%rbx),%rbx
+     a26:	48 85 db             	test   %rbx,%rbx
+     a29:	75 0d                	jne    a38 <add_record_to_server+0x88>
+     a2b:	eb 53                	jmp    a80 <add_record_to_server+0xd0>
+     a2d:	0f 1f 00             	nopl   (%rax)
+     a30:	48 8b 1b             	mov    (%rbx),%rbx
+     a33:	48 85 db             	test   %rbx,%rbx
+     a36:	74 48                	je     a80 <add_record_to_server+0xd0>
+		if (pattern->data == NULL)
+     a38:	48 8b 7b 08          	mov    0x8(%rbx),%rdi
+     a3c:	48 85 ff             	test   %rdi,%rdi
+     a3f:	74 ef                	je     a30 <add_record_to_server+0x80>
+		sdp_uuid2strn((uuid_t *) pattern->data, uuid, sizeof(uuid));
+     a41:	ba 20 00 00 00       	mov    $0x20,%edx
+     a46:	48 89 e6             	mov    %rsp,%rsi
+     a49:	e8 00 00 00 00       	callq  a4e <add_record_to_server+0x9e>
+		DBG("Record pattern UUID %s", uuid);
+     a4e:	f6 05 00 00 00 00 01 	testb  $0x1,0x0(%rip)        # a55 <add_record_to_server+0xa5>
+     a55:	74 d9                	je     a30 <add_record_to_server+0x80>
+     a57:	31 c0                	xor    %eax,%eax
+     a59:	49 89 e0             	mov    %rsp,%r8
+     a5c:	b9 00 00 00 00       	mov    $0x0,%ecx
+     a61:	ba 00 00 00 00       	mov    $0x0,%edx
+     a66:	be 00 00 00 00       	mov    $0x0,%esi
+     a6b:	bf ff ff 00 00       	mov    $0xffff,%edi
+     a70:	e8 00 00 00 00       	callq  a75 <add_record_to_server+0xc5>
+	for (pattern = rec->pattern; pattern; pattern = pattern->next) {
+     a75:	48 8b 1b             	mov    (%rbx),%rbx
+     a78:	48 85 db             	test   %rbx,%rbx
+     a7b:	75 bb                	jne    a38 <add_record_to_server+0x88>
+     a7d:	0f 1f 00             	nopl   (%rax)
+	update_mps();
+     a80:	e8 db f5 ff ff       	callq  60 <update_mps>
+	update_db_timestamp();
+     a85:	e8 56 fa ff ff       	callq  4e0 <update_db_timestamp>
+	return 0;
+     a8a:	31 d2                	xor    %edx,%edx
+}
+     a8c:	48 83 c4 28          	add    $0x28,%rsp
+     a90:	89 d0                	mov    %edx,%eax
+     a92:	5b                   	pop    %rbx
+     a93:	5d                   	pop    %rbp
+     a94:	c3                   	retq   
+     a95:	0f 1f 00             	nopl   (%rax)
+		rec->handle = sdp_next_handle();
+     a98:	e8 00 00 00 00       	callq  a9d <add_record_to_server+0xed>
+		if (rec->handle < 0x10000)
+     a9d:	3d ff ff 00 00       	cmp    $0xffff,%eax
+		rec->handle = sdp_next_handle();
+     aa2:	89 03                	mov    %eax,(%rbx)
+		if (rec->handle < 0x10000)
+     aa4:	0f 87 30 ff ff ff    	ja     9da <add_record_to_server+0x2a>
+			return -ENOSPC;
+     aaa:	ba e4 ff ff ff       	mov    $0xffffffe4,%edx
+     aaf:	eb db                	jmp    a8c <add_record_to_server+0xdc>
+     ab1:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+	DBG("Adding record with handle 0x%05x", rec->handle);
+     ab8:	44 8b 03             	mov    (%rbx),%r8d
+     abb:	b9 00 00 00 00       	mov    $0x0,%ecx
+     ac0:	ba 00 00 00 00       	mov    $0x0,%edx
+     ac5:	be 00 00 00 00       	mov    $0x0,%esi
+     aca:	bf ff ff 00 00       	mov    $0xffff,%edi
+     acf:	31 c0                	xor    %eax,%eax
+     ad1:	e8 00 00 00 00       	callq  ad6 <add_record_to_server+0x126>
+     ad6:	e9 0c ff ff ff       	jmpq   9e7 <add_record_to_server+0x37>
+		sdp_uuid16_create(&uuid, PUBLIC_BROWSE_GROUP);
+     adb:	48 89 e7             	mov    %rsp,%rdi
+     ade:	be 02 10 00 00       	mov    $0x1002,%esi
+     ae3:	e8 00 00 00 00       	callq  ae8 <add_record_to_server+0x138>
+		sdp_pattern_add_uuid(rec, &uuid);
+     ae8:	48 89 e6             	mov    %rsp,%rsi
+     aeb:	48 89 df             	mov    %rbx,%rdi
+     aee:	e8 00 00 00 00       	callq  af3 <add_record_to_server+0x143>
+     af3:	e9 2a ff ff ff       	jmpq   a22 <add_record_to_server+0x72>
+     af8:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+     aff:	00 
+
+0000000000000b00 <register_mps>:
+{
+     b00:	41 54                	push   %r12
+	uint16_t deps = MPS_DEFAULT_DEPS;
+     b02:	ba 0e 00 00 00       	mov    $0xe,%edx
+{
+     b07:	41 89 fc             	mov    %edi,%r12d
+     b0a:	55                   	push   %rbp
+     b0b:	53                   	push   %rbx
+     b0c:	48 83 c4 80          	add    $0xffffffffffffff80,%rsp
+	uint64_t mpsd_feat = MPS_MPSD_DEFAULT_FEATURES;
+     b10:	48 c7 44 24 10 00 00 	movq   $0x0,0x10(%rsp)
+     b17:	00 00 
+	uint64_t mpmd_feat = MPS_MPMD_DEFAULT_FEATURES;
+     b19:	48 c7 44 24 18 00 00 	movq   $0x0,0x18(%rsp)
+     b20:	00 00 
+	uint16_t deps = MPS_DEFAULT_DEPS;
+     b22:	66 89 54 24 0e       	mov    %dx,0xe(%rsp)
+	record = sdp_record_alloc();
+     b27:	e8 00 00 00 00       	callq  b2c <register_mps+0x2c>
+	if (!record)
+     b2c:	48 85 c0             	test   %rax,%rax
+	record = sdp_record_alloc();
+     b2f:	48 89 c3             	mov    %rax,%rbx
+	if (!record)
+     b32:	0f 84 3f 01 00 00    	je     c77 <register_mps+0x177>
+	sdp_uuid16_create(&root_uuid, PUBLIC_BROWSE_GROUP);
+     b38:	48 8d 7c 24 20       	lea    0x20(%rsp),%rdi
+     b3d:	be 02 10 00 00       	mov    $0x1002,%esi
+     b42:	e8 00 00 00 00       	callq  b47 <register_mps+0x47>
+	root = sdp_list_append(NULL, &root_uuid);
+     b47:	48 8d 74 24 20       	lea    0x20(%rsp),%rsi
+     b4c:	31 ff                	xor    %edi,%edi
+     b4e:	e8 00 00 00 00       	callq  b53 <register_mps+0x53>
+     b53:	be 05 00 00 00       	mov    $0x5,%esi
+     b58:	48 89 c2             	mov    %rax,%rdx
+     b5b:	48 89 c5             	mov    %rax,%rbp
+     b5e:	48 89 df             	mov    %rbx,%rdi
+     b61:	e8 00 00 00 00       	callq  b66 <register_mps+0x66>
+	sdp_list_free(root, NULL);
+     b66:	31 f6                	xor    %esi,%esi
+     b68:	48 89 ef             	mov    %rbp,%rdi
+     b6b:	e8 00 00 00 00       	callq  b70 <register_mps+0x70>
+	sdp_uuid16_create(&svclass_uuid, MPS_SVCLASS_ID);
+     b70:	48 8d 7c 24 40       	lea    0x40(%rsp),%rdi
+     b75:	be 3b 11 00 00       	mov    $0x113b,%esi
+     b7a:	e8 00 00 00 00       	callq  b7f <register_mps+0x7f>
+	svclass_id = sdp_list_append(NULL, &svclass_uuid);
+     b7f:	48 8d 74 24 40       	lea    0x40(%rsp),%rsi
+     b84:	31 ff                	xor    %edi,%edi
+     b86:	e8 00 00 00 00       	callq  b8b <register_mps+0x8b>
+	return sdp_set_uuidseq_attr(rec, SDP_ATTR_SVCLASS_ID_LIST, seq);
+     b8b:	be 01 00 00 00       	mov    $0x1,%esi
+     b90:	48 89 c2             	mov    %rax,%rdx
+     b93:	48 89 c5             	mov    %rax,%rbp
+     b96:	48 89 df             	mov    %rbx,%rdi
+     b99:	e8 00 00 00 00       	callq  b9e <register_mps+0x9e>
+	sdp_list_free(svclass_id, NULL);
+     b9e:	31 f6                	xor    %esi,%esi
+     ba0:	48 89 ef             	mov    %rbp,%rdi
+     ba3:	e8 00 00 00 00       	callq  ba8 <register_mps+0xa8>
+	sdp_uuid16_create(&profile.uuid, MPS_PROFILE_ID);
+     ba8:	48 8d 7c 24 60       	lea    0x60(%rsp),%rdi
+     bad:	be 3a 11 00 00       	mov    $0x113a,%esi
+     bb2:	e8 00 00 00 00       	callq  bb7 <register_mps+0xb7>
+	pfseq = sdp_list_append(NULL, &profile);
+     bb7:	48 8d 74 24 60       	lea    0x60(%rsp),%rsi
+     bbc:	31 ff                	xor    %edi,%edi
+	profile.version = 0x0100;
+     bbe:	b8 00 01 00 00       	mov    $0x100,%eax
+     bc3:	66 89 44 24 74       	mov    %ax,0x74(%rsp)
+	pfseq = sdp_list_append(NULL, &profile);
+     bc8:	e8 00 00 00 00       	callq  bcd <register_mps+0xcd>
+	sdp_set_profile_descs(record, pfseq);
+     bcd:	48 89 df             	mov    %rbx,%rdi
+	pfseq = sdp_list_append(NULL, &profile);
+     bd0:	48 89 c5             	mov    %rax,%rbp
+	sdp_set_profile_descs(record, pfseq);
+     bd3:	48 89 c6             	mov    %rax,%rsi
+     bd6:	e8 00 00 00 00       	callq  bdb <register_mps+0xdb>
+	sdp_list_free(pfseq, NULL);
+     bdb:	31 f6                	xor    %esi,%esi
+     bdd:	48 89 ef             	mov    %rbp,%rdi
+     be0:	e8 00 00 00 00       	callq  be5 <register_mps+0xe5>
+	mpsd_features = sdp_data_alloc(SDP_UINT64, &mpsd_feat);
+     be5:	48 8d 74 24 10       	lea    0x10(%rsp),%rsi
+     bea:	bf 0b 00 00 00       	mov    $0xb,%edi
+     bef:	e8 00 00 00 00       	callq  bf4 <register_mps+0xf4>
+	sdp_attr_add(record, SDP_ATTR_MPSD_SCENARIOS, mpsd_features);
+     bf4:	be 00 02 00 00       	mov    $0x200,%esi
+     bf9:	48 89 c2             	mov    %rax,%rdx
+     bfc:	48 89 df             	mov    %rbx,%rdi
+     bff:	e8 00 00 00 00       	callq  c04 <register_mps+0x104>
+	if (mpmd) {
+     c04:	45 84 e4             	test   %r12b,%r12b
+     c07:	75 77                	jne    c80 <register_mps+0x180>
+	dependencies = sdp_data_alloc(SDP_UINT16, &deps);
+     c09:	48 8d 74 24 0e       	lea    0xe(%rsp),%rsi
+     c0e:	bf 09 00 00 00       	mov    $0x9,%edi
+     c13:	e8 00 00 00 00       	callq  c18 <register_mps+0x118>
+	sdp_attr_add(record, SDP_ATTR_MPS_DEPENDENCIES, dependencies);
+     c18:	be 02 02 00 00       	mov    $0x202,%esi
+     c1d:	48 89 c2             	mov    %rax,%rdx
+     c20:	48 89 df             	mov    %rbx,%rdi
+     c23:	e8 00 00 00 00       	callq  c28 <register_mps+0x128>
+	sdp_set_info_attr(record, "Multi Profile", 0, 0);
+     c28:	31 c9                	xor    %ecx,%ecx
+     c2a:	31 d2                	xor    %edx,%edx
+     c2c:	be 00 00 00 00       	mov    $0x0,%esi
+     c31:	48 89 df             	mov    %rbx,%rdi
+     c34:	e8 00 00 00 00       	callq  c39 <register_mps+0x139>
+	if (add_record_to_server(BDADDR_ANY, record) < 0) {
+     c39:	48 8d 7c 24 60       	lea    0x60(%rsp),%rdi
+     c3e:	48 89 de             	mov    %rbx,%rsi
+     c41:	c6 44 24 60 00       	movb   $0x0,0x60(%rsp)
+     c46:	c6 44 24 61 00       	movb   $0x0,0x61(%rsp)
+     c4b:	c6 44 24 62 00       	movb   $0x0,0x62(%rsp)
+     c50:	c6 44 24 63 00       	movb   $0x0,0x63(%rsp)
+     c55:	c6 44 24 64 00       	movb   $0x0,0x64(%rsp)
+     c5a:	c6 44 24 65 00       	movb   $0x0,0x65(%rsp)
+     c5f:	e8 00 00 00 00       	callq  c64 <register_mps+0x164>
+     c64:	85 c0                	test   %eax,%eax
+     c66:	78 40                	js     ca8 <register_mps+0x1a8>
+	mps_handle = record->handle;
+     c68:	8b 03                	mov    (%rbx),%eax
+	mps_mpmd = mpmd;
+     c6a:	44 88 25 00 00 00 00 	mov    %r12b,0x0(%rip)        # c71 <register_mps+0x171>
+	mps_handle = record->handle;
+     c71:	89 05 00 00 00 00    	mov    %eax,0x0(%rip)        # c77 <register_mps+0x177>
+}
+     c77:	48 83 ec 80          	sub    $0xffffffffffffff80,%rsp
+     c7b:	5b                   	pop    %rbx
+     c7c:	5d                   	pop    %rbp
+     c7d:	41 5c                	pop    %r12
+     c7f:	c3                   	retq   
+		mpmd_features = sdp_data_alloc(SDP_UINT64, &mpmd_feat);
+     c80:	48 8d 74 24 18       	lea    0x18(%rsp),%rsi
+     c85:	bf 0b 00 00 00       	mov    $0xb,%edi
+     c8a:	e8 00 00 00 00       	callq  c8f <register_mps+0x18f>
+		sdp_attr_add(record, SDP_ATTR_MPMD_SCENARIOS, mpmd_features);
+     c8f:	be 01 02 00 00       	mov    $0x201,%esi
+     c94:	48 89 c2             	mov    %rax,%rdx
+     c97:	48 89 df             	mov    %rbx,%rdi
+     c9a:	e8 00 00 00 00       	callq  c9f <register_mps+0x19f>
+     c9f:	e9 65 ff ff ff       	jmpq   c09 <register_mps+0x109>
+     ca4:	0f 1f 40 00          	nopl   0x0(%rax)
+		sdp_record_free(record);
+     ca8:	48 89 df             	mov    %rbx,%rdi
+     cab:	e8 00 00 00 00       	callq  cb0 <register_mps+0x1b0>
+		return;
+     cb0:	eb c5                	jmp    c77 <register_mps+0x177>
+     cb2:	0f 1f 40 00          	nopl   0x0(%rax)
+     cb6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+     cbd:	00 00 00 
+
+0000000000000cc0 <remove_record_from_server>:
+{
+     cc0:	55                   	push   %rbp
+     cc1:	53                   	push   %rbx
+     cc2:	89 fb                	mov    %edi,%ebx
+     cc4:	48 83 ec 08          	sub    $0x8,%rsp
+	if (handle == SDP_SERVER_RECORD_HANDLE)
+     cc8:	85 ff                	test   %edi,%edi
+     cca:	74 64                	je     d30 <remove_record_from_server+0x70>
+	DBG("Removing record with handle 0x%05x", handle);
+     ccc:	f6 05 00 00 00 00 01 	testb  $0x1,0x0(%rip)        # cd3 <remove_record_from_server+0x13>
+     cd3:	75 2b                	jne    d00 <remove_record_from_server+0x40>
+	rec = sdp_record_find(handle);
+     cd5:	89 df                	mov    %ebx,%edi
+     cd7:	e8 00 00 00 00       	callq  cdc <remove_record_from_server+0x1c>
+	if (!rec)
+     cdc:	48 85 c0             	test   %rax,%rax
+	rec = sdp_record_find(handle);
+     cdf:	48 89 c5             	mov    %rax,%rbp
+	if (!rec)
+     ce2:	74 5c                	je     d40 <remove_record_from_server+0x80>
+	if (sdp_record_remove(handle) == 0) {
+     ce4:	89 df                	mov    %ebx,%edi
+     ce6:	e8 00 00 00 00       	callq  ceb <remove_record_from_server+0x2b>
+     ceb:	85 c0                	test   %eax,%eax
+     ced:	74 31                	je     d20 <remove_record_from_server+0x60>
+	sdp_record_free(rec);
+     cef:	48 89 ef             	mov    %rbp,%rdi
+     cf2:	e8 00 00 00 00       	callq  cf7 <remove_record_from_server+0x37>
+	return 0;
+     cf7:	31 c0                	xor    %eax,%eax
+}
+     cf9:	48 83 c4 08          	add    $0x8,%rsp
+     cfd:	5b                   	pop    %rbx
+     cfe:	5d                   	pop    %rbp
+     cff:	c3                   	retq   
+	DBG("Removing record with handle 0x%05x", handle);
+     d00:	41 89 f8             	mov    %edi,%r8d
+     d03:	b9 00 00 00 00       	mov    $0x0,%ecx
+     d08:	ba 00 00 00 00       	mov    $0x0,%edx
+     d0d:	be 00 00 00 00       	mov    $0x0,%esi
+     d12:	bf ff ff 00 00       	mov    $0xffff,%edi
+     d17:	31 c0                	xor    %eax,%eax
+     d19:	e8 00 00 00 00       	callq  d1e <remove_record_from_server+0x5e>
+     d1e:	eb b5                	jmp    cd5 <remove_record_from_server+0x15>
+		update_mps();
+     d20:	e8 3b f3 ff ff       	callq  60 <update_mps>
+		update_db_timestamp();
+     d25:	e8 b6 f7 ff ff       	callq  4e0 <update_db_timestamp>
+     d2a:	eb c3                	jmp    cef <remove_record_from_server+0x2f>
+     d2c:	0f 1f 40 00          	nopl   0x0(%rax)
+		return -EINVAL;
+     d30:	b8 ea ff ff ff       	mov    $0xffffffea,%eax
+     d35:	eb c2                	jmp    cf9 <remove_record_from_server+0x39>
+     d37:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+     d3e:	00 00 
+		return -ENOENT;
+     d40:	b8 fe ff ff ff       	mov    $0xfffffffe,%eax
+     d45:	eb b2                	jmp    cf9 <remove_record_from_server+0x39>
+     d47:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+     d4e:	00 00 
+
+0000000000000d50 <service_register_req>:
+
+/*
+ * Add the newly created service record to the service repository
+ */
+int service_register_req(sdp_req_t *req, sdp_buf_t *rsp)
+{
+     d50:	41 54                	push   %r12
+     d52:	49 89 f4             	mov    %rsi,%r12
+     d55:	55                   	push   %rbp
+     d56:	48 89 fd             	mov    %rdi,%rbp
+     d59:	53                   	push   %rbx
+     d5a:	48 83 ec 30          	sub    $0x30,%rsp
+	int scanned = 0;
+	sdp_data_t *handle;
+	uint8_t *p = req->buf + sizeof(sdp_pdu_hdr_t);
+     d5e:	48 8b 47 20          	mov    0x20(%rdi),%rax
+	int bufsize = req->len - sizeof(sdp_pdu_hdr_t);
+     d62:	8b 57 28             	mov    0x28(%rdi),%edx
+	int scanned = 0;
+     d65:	c7 44 24 0c 00 00 00 	movl   $0x0,0xc(%rsp)
+     d6c:	00 
+	sdp_record_t *rec;
+
+	req->flags = *p++;
+     d6d:	0f b6 48 05          	movzbl 0x5(%rax),%ecx
+     d71:	48 8d 70 06          	lea    0x6(%rax),%rsi
+     d75:	0f b6 f9             	movzbl %cl,%edi
+	if (req->flags & SDP_DEVICE_RECORD) {
+     d78:	83 e1 02             	and    $0x2,%ecx
+	req->flags = *p++;
+     d7b:	89 7d 18             	mov    %edi,0x18(%rbp)
+	if (req->flags & SDP_DEVICE_RECORD) {
+     d7e:	0f 85 ac 00 00 00    	jne    e30 <service_register_req+0xe0>
+	int bufsize = req->len - sizeof(sdp_pdu_hdr_t);
+     d84:	83 ea 05             	sub    $0x5,%edx
+		p += sizeof(bdaddr_t);
+		bufsize -= sizeof(bdaddr_t);
+	}
+
+	/* save image of PDU: we need it when clients request this attribute */
+	rec = extract_pdu_server(&req->device, p, bufsize, 0xffffffff, &scanned);
+     d87:	4c 8d 44 24 0c       	lea    0xc(%rsp),%r8
+     d8c:	b9 ff ff ff ff       	mov    $0xffffffff,%ecx
+     d91:	48 89 ef             	mov    %rbp,%rdi
+     d94:	e8 37 f5 ff ff       	callq  2d0 <extract_pdu_server>
+	if (!rec)
+     d99:	48 85 c0             	test   %rax,%rax
+	rec = extract_pdu_server(&req->device, p, bufsize, 0xffffffff, &scanned);
+     d9c:	48 89 c3             	mov    %rax,%rbx
+	if (!rec)
+     d9f:	0f 84 e4 00 00 00    	je     e89 <service_register_req+0x139>
+		goto invalid;
+
+	if (rec->handle == 0xffffffff) {
+     da5:	8b 38                	mov    (%rax),%edi
+     da7:	83 ff ff             	cmp    $0xffffffff,%edi
+     daa:	74 44                	je     df0 <service_register_req+0xa0>
+		if (rec->handle < 0x10000) {
+			sdp_record_free(rec);
+			goto invalid;
+		}
+	} else {
+		if (sdp_record_find(rec->handle)) {
+     dac:	e8 00 00 00 00       	callq  db1 <service_register_req+0x61>
+     db1:	48 85 c0             	test   %rax,%rax
+     db4:	74 4c                	je     e02 <service_register_req+0xb2>
+	sdp_attr_replace(rec, SDP_ATTR_RECORD_HANDLE, handle);
+
+success:
+	/* if the browse group descriptor is NULL,
+	 * ensure that the record belongs to the ROOT group */
+	if (sdp_data_get(rec, SDP_ATTR_BROWSE_GRP_LIST) == NULL) {
+     db6:	be 05 00 00 00       	mov    $0x5,%esi
+     dbb:	48 89 df             	mov    %rbx,%rdi
+     dbe:	e8 00 00 00 00       	callq  dc3 <service_register_req+0x73>
+     dc3:	48 85 c0             	test   %rax,%rax
+     dc6:	0f 84 94 00 00 00    	je     e60 <service_register_req+0x110>
+		uuid_t uuid;
+		sdp_uuid16_create(&uuid, PUBLIC_BROWSE_GROUP);
+		sdp_pattern_add_uuid(rec, &uuid);
+	}
+
+	update_db_timestamp();
+     dcc:	e8 0f f7 ff ff       	callq  4e0 <update_db_timestamp>
+     dd1:	8b 03                	mov    (%rbx),%eax
+	put_unaligned(cpu_to_le32(val), (uint32_t *) dst);
+}
+
+static inline void put_be32(uint32_t val, void *dst)
+{
+	put_unaligned(cpu_to_be32(val), (uint32_t *) dst);
+     dd3:	49 8b 14 24          	mov    (%r12),%rdx
+     dd7:	0f c8                	bswap  %eax
+     dd9:	89 02                	mov    %eax,(%rdx)
+
+	/* Build a rsp buffer */
+	put_be32(rec->handle, rsp->data);
+	rsp->data_size = sizeof(uint32_t);
+     ddb:	41 c7 44 24 08 04 00 	movl   $0x4,0x8(%r12)
+     de2:	00 00 
+
+	return 0;
+     de4:	31 c0                	xor    %eax,%eax
+invalid:
+	put_be16(SDP_INVALID_SYNTAX, rsp->data);
+	rsp->data_size = sizeof(uint16_t);
+
+	return -1;
+}
+     de6:	48 83 c4 30          	add    $0x30,%rsp
+     dea:	5b                   	pop    %rbx
+     deb:	5d                   	pop    %rbp
+     dec:	41 5c                	pop    %r12
+     dee:	c3                   	retq   
+     def:	90                   	nop
+		rec->handle = sdp_next_handle();
+     df0:	e8 00 00 00 00       	callq  df5 <service_register_req+0xa5>
+		if (rec->handle < 0x10000) {
+     df5:	3d ff ff 00 00       	cmp    $0xffff,%eax
+		rec->handle = sdp_next_handle();
+     dfa:	89 03                	mov    %eax,(%rbx)
+		if (rec->handle < 0x10000) {
+     dfc:	0f 86 7f 00 00 00    	jbe    e81 <service_register_req+0x131>
+	sdp_record_add(&req->device, rec);
+     e02:	48 89 de             	mov    %rbx,%rsi
+     e05:	48 89 ef             	mov    %rbp,%rdi
+     e08:	e8 00 00 00 00       	callq  e0d <service_register_req+0xbd>
+	if (!(req->flags & SDP_RECORD_PERSIST))
+     e0d:	f6 45 18 01          	testb  $0x1,0x18(%rbp)
+     e11:	74 3d                	je     e50 <service_register_req+0x100>
+	handle = sdp_data_alloc(SDP_UINT32, &rec->handle);
+     e13:	48 89 de             	mov    %rbx,%rsi
+     e16:	bf 0a 00 00 00       	mov    $0xa,%edi
+     e1b:	e8 00 00 00 00       	callq  e20 <service_register_req+0xd0>
+	sdp_attr_replace(rec, SDP_ATTR_RECORD_HANDLE, handle);
+     e20:	31 f6                	xor    %esi,%esi
+     e22:	48 89 c2             	mov    %rax,%rdx
+     e25:	48 89 df             	mov    %rbx,%rdi
+     e28:	e8 00 00 00 00       	callq  e2d <service_register_req+0xdd>
+     e2d:	eb 87                	jmp    db6 <service_register_req+0x66>
+     e2f:	90                   	nop
+{
+	return memcmp(ba1, ba2, sizeof(bdaddr_t));
+}
+static inline void bacpy(bdaddr_t *dst, const bdaddr_t *src)
+{
+	memcpy(dst, src, sizeof(bdaddr_t));
+     e30:	8b 48 06             	mov    0x6(%rax),%ecx
+		bufsize -= sizeof(bdaddr_t);
+     e33:	83 ea 0b             	sub    $0xb,%edx
+     e36:	89 4d 00             	mov    %ecx,0x0(%rbp)
+     e39:	0f b7 4e 04          	movzwl 0x4(%rsi),%ecx
+		p += sizeof(bdaddr_t);
+     e3d:	48 8d 70 0c          	lea    0xc(%rax),%rsi
+     e41:	66 89 4d 04          	mov    %cx,0x4(%rbp)
+     e45:	e9 3d ff ff ff       	jmpq   d87 <service_register_req+0x37>
+     e4a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+		sdp_svcdb_set_collectable(rec, req->sock);
+     e50:	8b 75 10             	mov    0x10(%rbp),%esi
+     e53:	48 89 df             	mov    %rbx,%rdi
+     e56:	e8 00 00 00 00       	callq  e5b <service_register_req+0x10b>
+     e5b:	eb b6                	jmp    e13 <service_register_req+0xc3>
+     e5d:	0f 1f 00             	nopl   (%rax)
+		sdp_uuid16_create(&uuid, PUBLIC_BROWSE_GROUP);
+     e60:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+     e65:	be 02 10 00 00       	mov    $0x1002,%esi
+     e6a:	e8 00 00 00 00       	callq  e6f <service_register_req+0x11f>
+		sdp_pattern_add_uuid(rec, &uuid);
+     e6f:	48 8d 74 24 10       	lea    0x10(%rsp),%rsi
+     e74:	48 89 df             	mov    %rbx,%rdi
+     e77:	e8 00 00 00 00       	callq  e7c <service_register_req+0x12c>
+     e7c:	e9 4b ff ff ff       	jmpq   dcc <service_register_req+0x7c>
+			sdp_record_free(rec);
+     e81:	48 89 df             	mov    %rbx,%rdi
+     e84:	e8 00 00 00 00       	callq  e89 <service_register_req+0x139>
+	put_unaligned(cpu_to_be16(val), (uint16_t *) ptr);
+     e89:	49 8b 04 24          	mov    (%r12),%rax
+     e8d:	ba 00 03 00 00       	mov    $0x300,%edx
+     e92:	66 89 10             	mov    %dx,(%rax)
+	rsp->data_size = sizeof(uint16_t);
+     e95:	41 c7 44 24 08 02 00 	movl   $0x2,0x8(%r12)
+     e9c:	00 00 
+	return -1;
+     e9e:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+     ea3:	e9 3e ff ff ff       	jmpq   de6 <service_register_req+0x96>
+     ea8:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+     eaf:	00 
+
+0000000000000eb0 <service_update_req>:
+
+/*
+ * Update a service record
+ */
+int service_update_req(sdp_req_t *req, sdp_buf_t *rsp)
+{
+     eb0:	41 56                	push   %r14
+     eb2:	41 55                	push   %r13
+     eb4:	41 54                	push   %r12
+     eb6:	55                   	push   %rbp
+     eb7:	48 89 f5             	mov    %rsi,%rbp
+     eba:	53                   	push   %rbx
+     ebb:	48 83 ec 20          	sub    $0x20,%rsp
+	sdp_record_t *orec, *nrec;
+	int status = 0, scanned = 0;
+	uint8_t *p = req->buf + sizeof(sdp_pdu_hdr_t);
+     ebf:	4c 8b 67 20          	mov    0x20(%rdi),%r12
+	int bufsize = req->len - sizeof(sdp_pdu_hdr_t);
+     ec3:	44 8b 77 28          	mov    0x28(%rdi),%r14d
+	int status = 0, scanned = 0;
+     ec7:	c7 44 24 0c 00 00 00 	movl   $0x0,0xc(%rsp)
+     ece:	00 
+     ecf:	41 8b 5c 24 05       	mov    0x5(%r12),%ebx
+     ed4:	0f cb                	bswap  %ebx
+	SDPDBG("Svc Rec Handle: 0x%x", handle);
+
+	p += sizeof(uint32_t);
+	bufsize -= sizeof(uint32_t);
+
+	orec = sdp_record_find(handle);
+     ed6:	89 df                	mov    %ebx,%edi
+     ed8:	e8 00 00 00 00       	callq  edd <service_update_req+0x2d>
+
+	SDPDBG("SvcRecOld: %p", orec);
+
+	if (!orec) {
+     edd:	48 85 c0             	test   %rax,%rax
+	orec = sdp_record_find(handle);
+     ee0:	49 89 c5             	mov    %rax,%r13
+	if (!orec) {
+     ee3:	74 6b                	je     f50 <service_update_req+0xa0>
+	bufsize -= sizeof(uint32_t);
+     ee5:	41 8d 56 f7          	lea    -0x9(%r14),%edx
+	p += sizeof(uint32_t);
+     ee9:	49 8d 74 24 09       	lea    0x9(%r12),%rsi
+		status = SDP_INVALID_RECORD_HANDLE;
+		goto done;
+	}
+
+	nrec = extract_pdu_server(BDADDR_ANY, p, bufsize, handle, &scanned);
+     eee:	4c 8d 44 24 0c       	lea    0xc(%rsp),%r8
+     ef3:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+     ef8:	89 d9                	mov    %ebx,%ecx
+     efa:	c6 44 24 10 00       	movb   $0x0,0x10(%rsp)
+     eff:	c6 44 24 11 00       	movb   $0x0,0x11(%rsp)
+     f04:	c6 44 24 12 00       	movb   $0x0,0x12(%rsp)
+     f09:	c6 44 24 13 00       	movb   $0x0,0x13(%rsp)
+     f0e:	c6 44 24 14 00       	movb   $0x0,0x14(%rsp)
+     f13:	c6 44 24 15 00       	movb   $0x0,0x15(%rsp)
+     f18:	e8 b3 f3 ff ff       	callq  2d0 <extract_pdu_server>
+	if (!nrec) {
+     f1d:	48 85 c0             	test   %rax,%rax
+     f20:	74 3e                	je     f60 <service_update_req+0xb0>
+		status = SDP_INVALID_SYNTAX;
+		goto done;
+	}
+
+	assert(nrec == orec);
+     f22:	4c 39 e8             	cmp    %r13,%rax
+     f25:	75 45                	jne    f6c <service_update_req+0xbc>
+
+	update_db_timestamp();
+     f27:	e8 b4 f5 ff ff       	callq  4e0 <update_db_timestamp>
+     f2c:	31 d2                	xor    %edx,%edx
+	int status = 0, scanned = 0;
+     f2e:	31 c0                	xor    %eax,%eax
+
+done:
+	p = rsp->data;
+     f30:	48 8b 4d 00          	mov    0x0(%rbp),%rcx
+     f34:	66 c1 ca 08          	ror    $0x8,%dx
+     f38:	66 89 11             	mov    %dx,(%rcx)
+	put_be16(status, p);
+	rsp->data_size = sizeof(uint16_t);
+     f3b:	c7 45 08 02 00 00 00 	movl   $0x2,0x8(%rbp)
+	return status;
+}
+     f42:	48 83 c4 20          	add    $0x20,%rsp
+     f46:	5b                   	pop    %rbx
+     f47:	5d                   	pop    %rbp
+     f48:	41 5c                	pop    %r12
+     f4a:	41 5d                	pop    %r13
+     f4c:	41 5e                	pop    %r14
+     f4e:	c3                   	retq   
+     f4f:	90                   	nop
+	p = rsp->data;
+     f50:	48 8b 4d 00          	mov    0x0(%rbp),%rcx
+     f54:	ba 02 00 00 00       	mov    $0x2,%edx
+		status = SDP_INVALID_RECORD_HANDLE;
+     f59:	b8 02 00 00 00       	mov    $0x2,%eax
+     f5e:	eb d4                	jmp    f34 <service_update_req+0x84>
+     f60:	ba 03 00 00 00       	mov    $0x3,%edx
+		status = SDP_INVALID_SYNTAX;
+     f65:	b8 03 00 00 00       	mov    $0x3,%eax
+     f6a:	eb c4                	jmp    f30 <service_update_req+0x80>
+	assert(nrec == orec);
+     f6c:	b9 00 00 00 00       	mov    $0x0,%ecx
+     f71:	ba 91 03 00 00       	mov    $0x391,%edx
+     f76:	be 00 00 00 00       	mov    $0x0,%esi
+     f7b:	bf 00 00 00 00       	mov    $0x0,%edi
+     f80:	e8 00 00 00 00       	callq  f85 <service_update_req+0xd5>
+     f85:	90                   	nop
+     f86:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+     f8d:	00 00 00 
+
+0000000000000f90 <service_remove_req>:
+
+/*
+ * Remove a registered service record
+ */
+int service_remove_req(sdp_req_t *req, sdp_buf_t *rsp)
+{
+     f90:	41 54                	push   %r12
+     f92:	49 89 f4             	mov    %rsi,%r12
+     f95:	55                   	push   %rbp
+     f96:	53                   	push   %rbx
+	return be32_to_cpu(get_unaligned((const uint32_t *) ptr));
+     f97:	48 8b 47 20          	mov    0x20(%rdi),%rax
+     f9b:	8b 58 05             	mov    0x5(%rax),%ebx
+     f9e:	0f cb                	bswap  %ebx
+	sdp_record_t *rec;
+	int status = 0;
+
+	/* extract service record handle */
+
+	rec = sdp_record_find(handle);
+     fa0:	89 df                	mov    %ebx,%edi
+     fa2:	e8 00 00 00 00       	callq  fa7 <service_remove_req+0x17>
+	if (rec) {
+     fa7:	48 85 c0             	test   %rax,%rax
+	rec = sdp_record_find(handle);
+     faa:	48 89 c5             	mov    %rax,%rbp
+	if (rec) {
+     fad:	74 41                	je     ff0 <service_remove_req+0x60>
+		sdp_svcdb_collect(rec);
+     faf:	48 89 c7             	mov    %rax,%rdi
+     fb2:	e8 00 00 00 00       	callq  fb7 <service_remove_req+0x27>
+		status = sdp_record_remove(handle);
+     fb7:	89 df                	mov    %ebx,%edi
+     fb9:	e8 00 00 00 00       	callq  fbe <service_remove_req+0x2e>
+		sdp_record_free(rec);
+     fbe:	48 89 ef             	mov    %rbp,%rdi
+		status = sdp_record_remove(handle);
+     fc1:	89 c3                	mov    %eax,%ebx
+		sdp_record_free(rec);
+     fc3:	e8 00 00 00 00       	callq  fc8 <service_remove_req+0x38>
+		if (status == 0)
+     fc8:	85 db                	test   %ebx,%ebx
+     fca:	74 34                	je     1000 <service_remove_req+0x70>
+	} else {
+		status = SDP_INVALID_RECORD_HANDLE;
+		SDPDBG("Could not find record : 0x%x", handle);
+	}
+
+	p = rsp->data;
+     fcc:	49 8b 14 24          	mov    (%r12),%rdx
+     fd0:	89 d8                	mov    %ebx,%eax
+	put_unaligned(cpu_to_be16(val), (uint16_t *) ptr);
+     fd2:	66 c1 c8 08          	ror    $0x8,%ax
+     fd6:	66 89 02             	mov    %ax,(%rdx)
+	put_be16(status, p);
+	rsp->data_size = sizeof(uint16_t);
+     fd9:	41 c7 44 24 08 02 00 	movl   $0x2,0x8(%r12)
+     fe0:	00 00 
+
+	return status;
+}
+     fe2:	89 d8                	mov    %ebx,%eax
+     fe4:	5b                   	pop    %rbx
+     fe5:	5d                   	pop    %rbp
+     fe6:	41 5c                	pop    %r12
+     fe8:	c3                   	retq   
+     fe9:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+	p = rsp->data;
+     ff0:	49 8b 14 24          	mov    (%r12),%rdx
+     ff4:	b8 02 00 00 00       	mov    $0x2,%eax
+		status = SDP_INVALID_RECORD_HANDLE;
+     ff9:	bb 02 00 00 00       	mov    $0x2,%ebx
+     ffe:	eb d2                	jmp    fd2 <service_remove_req+0x42>
+			update_db_timestamp();
+    1000:	e8 db f4 ff ff       	callq  4e0 <update_db_timestamp>
+    1005:	eb c5                	jmp    fcc <service_remove_req+0x3c>

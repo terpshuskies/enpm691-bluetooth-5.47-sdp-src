@@ -1,0 +1,639 @@
+
+bluetoothd-sdpd-server.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <io_accept_event>:
+{
+	GIOChannel *io;
+	int nsk;
+
+	if (cond & (G_IO_HUP | G_IO_ERR | G_IO_NVAL))
+		return FALSE;
+   0:	31 c0                	xor    %eax,%eax
+	if (cond & (G_IO_HUP | G_IO_ERR | G_IO_NVAL))
+   2:	83 e6 38             	and    $0x38,%esi
+   5:	75 29                	jne    30 <io_accept_event+0x30>
+{
+   7:	55                   	push   %rbp
+   8:	53                   	push   %rbx
+   9:	48 89 d3             	mov    %rdx,%rbx
+   c:	48 81 ec 88 00 00 00 	sub    $0x88,%rsp
+
+	if (data == &l2cap_sock) {
+  13:	48 81 fa 00 00 00 00 	cmp    $0x0,%rdx
+  1a:	74 7c                	je     98 <io_accept_event+0x98>
+		struct sockaddr_l2 addr;
+		socklen_t len = sizeof(addr);
+
+		nsk = accept(l2cap_sock, (struct sockaddr *) &addr, &len);
+	} else if (data == &unix_sock) {
+  1c:	48 81 fa 00 00 00 00 	cmp    $0x0,%rdx
+		struct sockaddr_un addr;
+		socklen_t len = sizeof(addr);
+
+		nsk = accept(unix_sock, (struct sockaddr *) &addr, &len);
+	} else
+		return FALSE;
+  23:	89 f0                	mov    %esi,%eax
+	} else if (data == &unix_sock) {
+  25:	74 11                	je     38 <io_accept_event+0x38>
+					io_session_event, data);
+
+	g_io_channel_unref(io);
+
+	return TRUE;
+}
+  27:	48 81 c4 88 00 00 00 	add    $0x88,%rsp
+  2e:	5b                   	pop    %rbx
+  2f:	5d                   	pop    %rbp
+  30:	f3 c3                	repz retq 
+  32:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+		nsk = accept(unix_sock, (struct sockaddr *) &addr, &len);
+  38:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 3e <io_accept_event+0x3e>
+  3e:	48 8d 54 24 0c       	lea    0xc(%rsp),%rdx
+  43:	48 8d 74 24 10       	lea    0x10(%rsp),%rsi
+		socklen_t len = sizeof(addr);
+  48:	c7 44 24 0c 6e 00 00 	movl   $0x6e,0xc(%rsp)
+  4f:	00 
+		nsk = accept(unix_sock, (struct sockaddr *) &addr, &len);
+  50:	e8 00 00 00 00       	callq  55 <io_accept_event+0x55>
+	if (nsk < 0) {
+  55:	85 c0                	test   %eax,%eax
+  57:	78 67                	js     c0 <io_accept_event+0xc0>
+	io = g_io_channel_unix_new(nsk);
+  59:	89 c7                	mov    %eax,%edi
+  5b:	e8 00 00 00 00       	callq  60 <io_accept_event+0x60>
+	g_io_channel_set_close_on_unref(io, TRUE);
+  60:	be 01 00 00 00       	mov    $0x1,%esi
+	io = g_io_channel_unix_new(nsk);
+  65:	48 89 c5             	mov    %rax,%rbp
+	g_io_channel_set_close_on_unref(io, TRUE);
+  68:	48 89 c7             	mov    %rax,%rdi
+  6b:	e8 00 00 00 00       	callq  70 <io_accept_event+0x70>
+	g_io_add_watch(io, G_IO_IN | G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+  70:	48 89 d9             	mov    %rbx,%rcx
+  73:	ba 00 00 00 00       	mov    $0x0,%edx
+  78:	be 39 00 00 00       	mov    $0x39,%esi
+  7d:	48 89 ef             	mov    %rbp,%rdi
+  80:	e8 00 00 00 00       	callq  85 <io_accept_event+0x85>
+	g_io_channel_unref(io);
+  85:	48 89 ef             	mov    %rbp,%rdi
+  88:	e8 00 00 00 00       	callq  8d <io_accept_event+0x8d>
+	return TRUE;
+  8d:	b8 01 00 00 00       	mov    $0x1,%eax
+  92:	eb 93                	jmp    27 <io_accept_event+0x27>
+  94:	0f 1f 40 00          	nopl   0x0(%rax)
+		nsk = accept(l2cap_sock, (struct sockaddr *) &addr, &len);
+  98:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 9e <io_accept_event+0x9e>
+  9e:	48 8d 54 24 0c       	lea    0xc(%rsp),%rdx
+  a3:	48 8d 74 24 10       	lea    0x10(%rsp),%rsi
+		socklen_t len = sizeof(addr);
+  a8:	c7 44 24 0c 0e 00 00 	movl   $0xe,0xc(%rsp)
+  af:	00 
+		nsk = accept(l2cap_sock, (struct sockaddr *) &addr, &len);
+  b0:	e8 00 00 00 00       	callq  b5 <io_accept_event+0xb5>
+  b5:	eb 9e                	jmp    55 <io_accept_event+0x55>
+  b7:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+  be:	00 00 
+		error("Can't accept connection: %s", strerror(errno));
+  c0:	e8 00 00 00 00       	callq  c5 <io_accept_event+0xc5>
+  c5:	8b 38                	mov    (%rax),%edi
+  c7:	e8 00 00 00 00       	callq  cc <io_accept_event+0xcc>
+  cc:	bf 00 00 00 00       	mov    $0x0,%edi
+  d1:	48 89 c6             	mov    %rax,%rsi
+  d4:	31 c0                	xor    %eax,%eax
+  d6:	e8 00 00 00 00       	callq  db <io_accept_event+0xdb>
+		return TRUE;
+  db:	b8 01 00 00 00       	mov    $0x1,%eax
+  e0:	e9 42 ff ff ff       	jmpq   27 <io_accept_event+0x27>
+  e5:	90                   	nop
+  e6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+  ed:	00 00 00 
+
+00000000000000f0 <io_session_event>:
+{
+  f0:	41 55                	push   %r13
+  f2:	41 54                	push   %r12
+  f4:	55                   	push   %rbp
+		return FALSE;
+  f5:	31 ed                	xor    %ebp,%ebp
+{
+  f7:	53                   	push   %rbx
+  f8:	89 f3                	mov    %esi,%ebx
+  fa:	48 83 ec 18          	sub    $0x18,%rsp
+	if (cond & G_IO_NVAL)
+  fe:	40 f6 c6 20          	test   $0x20,%sil
+ 102:	74 14                	je     118 <io_session_event+0x28>
+}
+ 104:	48 83 c4 18          	add    $0x18,%rsp
+ 108:	89 e8                	mov    %ebp,%eax
+ 10a:	5b                   	pop    %rbx
+ 10b:	5d                   	pop    %rbp
+ 10c:	41 5c                	pop    %r12
+ 10e:	41 5d                	pop    %r13
+ 110:	c3                   	retq   
+ 111:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+	sk = g_io_channel_unix_get_fd(chan);
+ 118:	e8 00 00 00 00       	callq  11d <io_session_event+0x2d>
+	if (cond & (G_IO_HUP | G_IO_ERR)) {
+ 11d:	83 e3 18             	and    $0x18,%ebx
+	sk = g_io_channel_unix_get_fd(chan);
+ 120:	41 89 c4             	mov    %eax,%r12d
+	if (cond & (G_IO_HUP | G_IO_ERR)) {
+ 123:	75 73                	jne    198 <io_session_event+0xa8>
+	len = recv(sk, &hdr, sizeof(sdp_pdu_hdr_t), MSG_PEEK);
+ 125:	b9 02 00 00 00       	mov    $0x2,%ecx
+ 12a:	ba 05 00 00 00       	mov    $0x5,%edx
+ 12f:	48 89 e6             	mov    %rsp,%rsi
+ 132:	89 c7                	mov    %eax,%edi
+ 134:	e8 00 00 00 00       	callq  139 <io_session_event+0x49>
+	if (len < 0 || (unsigned int) len < sizeof(sdp_pdu_hdr_t)) {
+ 139:	83 f8 04             	cmp    $0x4,%eax
+ 13c:	7e 5a                	jle    198 <io_session_event+0xa8>
+	size = sizeof(sdp_pdu_hdr_t) + ntohs(hdr.plen);
+ 13e:	0f b7 44 24 03       	movzwl 0x3(%rsp),%eax
+		return TRUE;
+ 143:	bd 01 00 00 00       	mov    $0x1,%ebp
+	size = sizeof(sdp_pdu_hdr_t) + ntohs(hdr.plen);
+ 148:	66 c1 c8 08          	ror    $0x8,%ax
+ 14c:	0f b7 c0             	movzwl %ax,%eax
+	buf = malloc(size);
+ 14f:	4c 8d 68 05          	lea    0x5(%rax),%r13
+ 153:	4c 89 ef             	mov    %r13,%rdi
+ 156:	e8 00 00 00 00       	callq  15b <io_session_event+0x6b>
+	if (!buf)
+ 15b:	48 85 c0             	test   %rax,%rax
+	buf = malloc(size);
+ 15e:	48 89 c3             	mov    %rax,%rbx
+	if (!buf)
+ 161:	74 a1                	je     104 <io_session_event+0x14>
+	len = recv(sk, buf, size, 0);
+ 163:	31 c9                	xor    %ecx,%ecx
+ 165:	4c 89 ea             	mov    %r13,%rdx
+ 168:	48 89 c6             	mov    %rax,%rsi
+ 16b:	44 89 e7             	mov    %r12d,%edi
+ 16e:	e8 00 00 00 00       	callq  173 <io_session_event+0x83>
+	if (len <= 0) {
+ 173:	85 c0                	test   %eax,%eax
+ 175:	7e 39                	jle    1b0 <io_session_event+0xc0>
+	handle_request(sk, buf, len);
+ 177:	89 c2                	mov    %eax,%edx
+ 179:	48 89 de             	mov    %rbx,%rsi
+ 17c:	44 89 e7             	mov    %r12d,%edi
+ 17f:	e8 00 00 00 00       	callq  184 <io_session_event+0x94>
+}
+ 184:	48 83 c4 18          	add    $0x18,%rsp
+ 188:	89 e8                	mov    %ebp,%eax
+ 18a:	5b                   	pop    %rbx
+ 18b:	5d                   	pop    %rbp
+ 18c:	41 5c                	pop    %r12
+ 18e:	41 5d                	pop    %r13
+ 190:	c3                   	retq   
+ 191:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+		sdp_svcdb_collect_all(sk);
+ 198:	44 89 e7             	mov    %r12d,%edi
+ 19b:	e8 00 00 00 00       	callq  1a0 <io_session_event+0xb0>
+}
+ 1a0:	48 83 c4 18          	add    $0x18,%rsp
+ 1a4:	89 e8                	mov    %ebp,%eax
+ 1a6:	5b                   	pop    %rbx
+ 1a7:	5d                   	pop    %rbp
+ 1a8:	41 5c                	pop    %r12
+ 1aa:	41 5d                	pop    %r13
+ 1ac:	c3                   	retq   
+ 1ad:	0f 1f 00             	nopl   (%rax)
+		sdp_svcdb_collect_all(sk);
+ 1b0:	44 89 e7             	mov    %r12d,%edi
+		return FALSE;
+ 1b3:	40 30 ed             	xor    %bpl,%bpl
+		sdp_svcdb_collect_all(sk);
+ 1b6:	e8 00 00 00 00       	callq  1bb <io_session_event+0xcb>
+		free(buf);
+ 1bb:	48 89 df             	mov    %rbx,%rdi
+ 1be:	e8 00 00 00 00       	callq  1c3 <io_session_event+0xd3>
+ 1c3:	e9 3c ff ff ff       	jmpq   104 <io_session_event+0x14>
+ 1c8:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+ 1cf:	00 
+
+00000000000001d0 <start_sdp_server>:
+
+int start_sdp_server(uint16_t mtu, uint32_t flags)
+{
+ 1d0:	41 54                	push   %r12
+	int compat = flags & SDP_SERVER_COMPAT;
+	int master = flags & SDP_SERVER_MASTER;
+	GIOChannel *io;
+
+	info("Starting SDP server");
+ 1d2:	31 c0                	xor    %eax,%eax
+	int compat = flags & SDP_SERVER_COMPAT;
+ 1d4:	41 89 f4             	mov    %esi,%r12d
+	int master = flags & SDP_SERVER_MASTER;
+ 1d7:	83 e6 02             	and    $0x2,%esi
+	int compat = flags & SDP_SERVER_COMPAT;
+ 1da:	41 83 e4 01          	and    $0x1,%r12d
+{
+ 1de:	55                   	push   %rbp
+	int master = flags & SDP_SERVER_MASTER;
+ 1df:	89 f5                	mov    %esi,%ebp
+{
+ 1e1:	53                   	push   %rbx
+ 1e2:	89 fb                	mov    %edi,%ebx
+	info("Starting SDP server");
+ 1e4:	bf 00 00 00 00       	mov    $0x0,%edi
+{
+ 1e9:	48 81 ec a0 00 00 00 	sub    $0xa0,%rsp
+	info("Starting SDP server");
+ 1f0:	e8 00 00 00 00       	callq  1f5 <start_sdp_server+0x25>
+	register_public_browse_group();
+ 1f5:	e8 00 00 00 00       	callq  1fa <start_sdp_server+0x2a>
+	register_server_service();
+ 1fa:	e8 00 00 00 00       	callq  1ff <start_sdp_server+0x2f>
+	l2cap_sock = socket(PF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP);
+ 1ff:	31 d2                	xor    %edx,%edx
+ 201:	be 05 00 00 00       	mov    $0x5,%esi
+ 206:	bf 1f 00 00 00       	mov    $0x1f,%edi
+ 20b:	e8 00 00 00 00       	callq  210 <start_sdp_server+0x40>
+	if (l2cap_sock < 0) {
+ 210:	85 c0                	test   %eax,%eax
+	l2cap_sock = socket(PF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP);
+ 212:	89 05 00 00 00 00    	mov    %eax,0x0(%rip)        # 218 <start_sdp_server+0x48>
+	if (l2cap_sock < 0) {
+ 218:	0f 88 0f 03 00 00    	js     52d <start_sdp_server+0x35d>
+	l2addr.l2_family = AF_BLUETOOTH;
+ 21e:	be 1f 00 00 00       	mov    $0x1f,%esi
+	memset(&l2addr, 0, sizeof(l2addr));
+ 223:	48 c7 44 24 20 00 00 	movq   $0x0,0x20(%rsp)
+ 22a:	00 00 
+	l2addr.l2_psm = htobs(SDP_PSM);
+ 22c:	bf 01 00 00 00       	mov    $0x1,%edi
+	l2addr.l2_family = AF_BLUETOOTH;
+ 231:	66 89 74 24 20       	mov    %si,0x20(%rsp)
+	if (bind(l2cap_sock, (struct sockaddr *) &l2addr, sizeof(l2addr)) < 0) {
+ 236:	48 8d 74 24 20       	lea    0x20(%rsp),%rsi
+	memset(&l2addr, 0, sizeof(l2addr));
+ 23b:	31 c9                	xor    %ecx,%ecx
+	l2addr.l2_psm = htobs(SDP_PSM);
+ 23d:	66 89 7c 24 22       	mov    %di,0x22(%rsp)
+	if (bind(l2cap_sock, (struct sockaddr *) &l2addr, sizeof(l2addr)) < 0) {
+ 242:	ba 0e 00 00 00       	mov    $0xe,%edx
+ 247:	89 c7                	mov    %eax,%edi
+	memset(&l2addr, 0, sizeof(l2addr));
+ 249:	c7 44 24 28 00 00 00 	movl   $0x0,0x28(%rsp)
+ 250:	00 
+ 251:	66 89 4c 24 2c       	mov    %cx,0x2c(%rsp)
+	if (bind(l2cap_sock, (struct sockaddr *) &l2addr, sizeof(l2addr)) < 0) {
+ 256:	e8 00 00 00 00       	callq  25b <start_sdp_server+0x8b>
+ 25b:	85 c0                	test   %eax,%eax
+ 25d:	0f 88 0d 03 00 00    	js     570 <start_sdp_server+0x3a0>
+	if (master) {
+ 263:	85 ed                	test   %ebp,%ebp
+ 265:	0f 85 8d 02 00 00    	jne    4f8 <start_sdp_server+0x328>
+	if (mtu > 0) {
+ 26b:	66 85 db             	test   %bx,%bx
+ 26e:	66 90                	xchg   %ax,%ax
+ 270:	75 7e                	jne    2f0 <start_sdp_server+0x120>
+	if (listen(l2cap_sock, 5) < 0) {
+ 272:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 278 <start_sdp_server+0xa8>
+ 278:	be 05 00 00 00       	mov    $0x5,%esi
+ 27d:	e8 00 00 00 00       	callq  282 <start_sdp_server+0xb2>
+ 282:	85 c0                	test   %eax,%eax
+ 284:	0f 88 06 03 00 00    	js     590 <start_sdp_server+0x3c0>
+	if (!compat) {
+ 28a:	45 85 e4             	test   %r12d,%r12d
+ 28d:	0f 85 0d 01 00 00    	jne    3a0 <start_sdp_server+0x1d0>
+	if (init_server(mtu, master, compat) < 0) {
+		error("Server initialization failed");
+		return -1;
+	}
+
+	io = g_io_channel_unix_new(l2cap_sock);
+ 293:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 299 <start_sdp_server+0xc9>
+		unix_sock = -1;
+ 299:	c7 05 00 00 00 00 ff 	movl   $0xffffffff,0x0(%rip)        # 2a3 <start_sdp_server+0xd3>
+ 2a0:	ff ff ff 
+	io = g_io_channel_unix_new(l2cap_sock);
+ 2a3:	e8 00 00 00 00       	callq  2a8 <start_sdp_server+0xd8>
+	g_io_channel_set_close_on_unref(io, TRUE);
+ 2a8:	be 01 00 00 00       	mov    $0x1,%esi
+	io = g_io_channel_unix_new(l2cap_sock);
+ 2ad:	48 89 c3             	mov    %rax,%rbx
+	g_io_channel_set_close_on_unref(io, TRUE);
+ 2b0:	48 89 c7             	mov    %rax,%rdi
+ 2b3:	e8 00 00 00 00       	callq  2b8 <start_sdp_server+0xe8>
+
+	l2cap_id = g_io_add_watch(io, G_IO_IN | G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+ 2b8:	48 89 df             	mov    %rbx,%rdi
+ 2bb:	b9 00 00 00 00       	mov    $0x0,%ecx
+ 2c0:	ba 00 00 00 00       	mov    $0x0,%edx
+ 2c5:	be 39 00 00 00       	mov    $0x39,%esi
+ 2ca:	e8 00 00 00 00       	callq  2cf <start_sdp_server+0xff>
+					io_accept_event, &l2cap_sock);
+	g_io_channel_unref(io);
+ 2cf:	48 89 df             	mov    %rbx,%rdi
+					G_IO_IN | G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+					io_accept_event, &unix_sock);
+		g_io_channel_unref(io);
+	}
+
+	return 0;
+ 2d2:	31 db                	xor    %ebx,%ebx
+	l2cap_id = g_io_add_watch(io, G_IO_IN | G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+ 2d4:	89 05 00 00 00 00    	mov    %eax,0x0(%rip)        # 2da <start_sdp_server+0x10a>
+	g_io_channel_unref(io);
+ 2da:	e8 00 00 00 00       	callq  2df <start_sdp_server+0x10f>
+}
+ 2df:	48 81 c4 a0 00 00 00 	add    $0xa0,%rsp
+ 2e6:	89 d8                	mov    %ebx,%eax
+ 2e8:	5b                   	pop    %rbx
+ 2e9:	5d                   	pop    %rbp
+ 2ea:	41 5c                	pop    %r12
+ 2ec:	c3                   	retq   
+ 2ed:	0f 1f 00             	nopl   (%rax)
+		if (getsockopt(l2cap_sock, SOL_L2CAP, L2CAP_OPTIONS, &opts, &optlen) < 0) {
+ 2f0:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 2f6 <start_sdp_server+0x126>
+ 2f6:	4c 8d 44 24 0c       	lea    0xc(%rsp),%r8
+ 2fb:	48 8d 4c 24 10       	lea    0x10(%rsp),%rcx
+ 300:	ba 01 00 00 00       	mov    $0x1,%edx
+ 305:	be 06 00 00 00       	mov    $0x6,%esi
+		memset(&opts, 0, sizeof(opts));
+ 30a:	48 c7 44 24 10 00 00 	movq   $0x0,0x10(%rsp)
+ 311:	00 00 
+ 313:	c7 44 24 18 00 00 00 	movl   $0x0,0x18(%rsp)
+ 31a:	00 
+		optlen = sizeof(opts);
+ 31b:	c7 44 24 0c 0c 00 00 	movl   $0xc,0xc(%rsp)
+ 322:	00 
+		if (getsockopt(l2cap_sock, SOL_L2CAP, L2CAP_OPTIONS, &opts, &optlen) < 0) {
+ 323:	e8 00 00 00 00       	callq  328 <start_sdp_server+0x158>
+ 328:	85 c0                	test   %eax,%eax
+ 32a:	0f 88 20 02 00 00    	js     550 <start_sdp_server+0x380>
+		if (setsockopt(l2cap_sock, SOL_L2CAP, L2CAP_OPTIONS, &opts, sizeof(opts)) < 0) {
+ 330:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 336 <start_sdp_server+0x166>
+ 336:	48 8d 4c 24 10       	lea    0x10(%rsp),%rcx
+ 33b:	41 b8 0c 00 00 00    	mov    $0xc,%r8d
+ 341:	ba 01 00 00 00       	mov    $0x1,%edx
+ 346:	be 06 00 00 00       	mov    $0x6,%esi
+		opts.omtu = mtu;
+ 34b:	66 89 5c 24 10       	mov    %bx,0x10(%rsp)
+		opts.imtu = mtu;
+ 350:	66 89 5c 24 12       	mov    %bx,0x12(%rsp)
+		if (setsockopt(l2cap_sock, SOL_L2CAP, L2CAP_OPTIONS, &opts, sizeof(opts)) < 0) {
+ 355:	e8 00 00 00 00       	callq  35a <start_sdp_server+0x18a>
+ 35a:	85 c0                	test   %eax,%eax
+ 35c:	0f 89 10 ff ff ff    	jns    272 <start_sdp_server+0xa2>
+			error("setsockopt: %s", strerror(errno));
+ 362:	e8 00 00 00 00       	callq  367 <start_sdp_server+0x197>
+ 367:	8b 38                	mov    (%rax),%edi
+ 369:	e8 00 00 00 00       	callq  36e <start_sdp_server+0x19e>
+ 36e:	bf 00 00 00 00       	mov    $0x0,%edi
+ 373:	48 89 c6             	mov    %rax,%rsi
+ 376:	31 c0                	xor    %eax,%eax
+ 378:	e8 00 00 00 00       	callq  37d <start_sdp_server+0x1ad>
+ 37d:	0f 1f 00             	nopl   (%rax)
+		error("Server initialization failed");
+ 380:	bf 00 00 00 00       	mov    $0x0,%edi
+ 385:	31 c0                	xor    %eax,%eax
+		return -1;
+ 387:	bb ff ff ff ff       	mov    $0xffffffff,%ebx
+		error("Server initialization failed");
+ 38c:	e8 00 00 00 00       	callq  391 <start_sdp_server+0x1c1>
+		return -1;
+ 391:	e9 49 ff ff ff       	jmpq   2df <start_sdp_server+0x10f>
+ 396:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+ 39d:	00 00 00 
+	unix_sock = socket(PF_UNIX, SOCK_STREAM, 0);
+ 3a0:	31 d2                	xor    %edx,%edx
+ 3a2:	be 01 00 00 00       	mov    $0x1,%esi
+ 3a7:	bf 01 00 00 00       	mov    $0x1,%edi
+ 3ac:	e8 00 00 00 00       	callq  3b1 <start_sdp_server+0x1e1>
+	if (unix_sock < 0) {
+ 3b1:	85 c0                	test   %eax,%eax
+	unix_sock = socket(PF_UNIX, SOCK_STREAM, 0);
+ 3b3:	89 05 00 00 00 00    	mov    %eax,0x0(%rip)        # 3b9 <start_sdp_server+0x1e9>
+	if (unix_sock < 0) {
+ 3b9:	0f 88 f1 01 00 00    	js     5b0 <start_sdp_server+0x3e0>
+	memset(&unaddr, 0, sizeof(unaddr));
+ 3bf:	48 8d 5c 24 30       	lea    0x30(%rsp),%rbx
+ 3c4:	31 c0                	xor    %eax,%eax
+ 3c6:	b9 0d 00 00 00       	mov    $0xd,%ecx
+	unaddr.sun_family = AF_UNIX;
+ 3cb:	ba 01 00 00 00       	mov    $0x1,%edx
+	memset(&unaddr, 0, sizeof(unaddr));
+ 3d0:	48 89 df             	mov    %rbx,%rdi
+ 3d3:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+ 3d6:	31 c0                	xor    %eax,%eax
+ 3d8:	66 89 47 04          	mov    %ax,0x4(%rdi)
+ 3dc:	c7 07 00 00 00 00    	movl   $0x0,(%rdi)
+	strcpy(unaddr.sun_path, SDP_UNIX_PATH);
+ 3e2:	48 8d 7c 24 32       	lea    0x32(%rsp),%rdi
+ 3e7:	48 b8 2f 76 61 72 2f 	movabs $0x6e75722f7261762f,%rax
+ 3ee:	72 75 6e 
+	unaddr.sun_family = AF_UNIX;
+ 3f1:	66 89 54 24 30       	mov    %dx,0x30(%rsp)
+	strcpy(unaddr.sun_path, SDP_UNIX_PATH);
+ 3f6:	48 89 44 24 32       	mov    %rax,0x32(%rsp)
+ 3fb:	c7 47 08 2f 73 64 70 	movl   $0x7064732f,0x8(%rdi)
+ 402:	c6 47 0c 00          	movb   $0x0,0xc(%rdi)
+	unlink(unaddr.sun_path);
+ 406:	e8 00 00 00 00       	callq  40b <start_sdp_server+0x23b>
+	if (bind(unix_sock, (struct sockaddr *) &unaddr, sizeof(unaddr)) < 0) {
+ 40b:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 411 <start_sdp_server+0x241>
+ 411:	ba 6e 00 00 00       	mov    $0x6e,%edx
+ 416:	48 89 de             	mov    %rbx,%rsi
+ 419:	e8 00 00 00 00       	callq  41e <start_sdp_server+0x24e>
+ 41e:	85 c0                	test   %eax,%eax
+ 420:	0f 88 aa 01 00 00    	js     5d0 <start_sdp_server+0x400>
+	if (listen(unix_sock, 5) < 0) {
+ 426:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 42c <start_sdp_server+0x25c>
+ 42c:	be 05 00 00 00       	mov    $0x5,%esi
+ 431:	e8 00 00 00 00       	callq  436 <start_sdp_server+0x266>
+ 436:	85 c0                	test   %eax,%eax
+ 438:	0f 88 b2 01 00 00    	js     5f0 <start_sdp_server+0x420>
+	chmod(SDP_UNIX_PATH, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
+ 43e:	be b0 01 00 00       	mov    $0x1b0,%esi
+ 443:	bf 00 00 00 00       	mov    $0x0,%edi
+ 448:	e8 00 00 00 00       	callq  44d <start_sdp_server+0x27d>
+	io = g_io_channel_unix_new(l2cap_sock);
+ 44d:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 453 <start_sdp_server+0x283>
+ 453:	e8 00 00 00 00       	callq  458 <start_sdp_server+0x288>
+	g_io_channel_set_close_on_unref(io, TRUE);
+ 458:	be 01 00 00 00       	mov    $0x1,%esi
+	io = g_io_channel_unix_new(l2cap_sock);
+ 45d:	48 89 c3             	mov    %rax,%rbx
+	g_io_channel_set_close_on_unref(io, TRUE);
+ 460:	48 89 c7             	mov    %rax,%rdi
+ 463:	e8 00 00 00 00       	callq  468 <start_sdp_server+0x298>
+	l2cap_id = g_io_add_watch(io, G_IO_IN | G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+ 468:	b9 00 00 00 00       	mov    $0x0,%ecx
+ 46d:	ba 00 00 00 00       	mov    $0x0,%edx
+ 472:	be 39 00 00 00       	mov    $0x39,%esi
+ 477:	48 89 df             	mov    %rbx,%rdi
+ 47a:	e8 00 00 00 00       	callq  47f <start_sdp_server+0x2af>
+	g_io_channel_unref(io);
+ 47f:	48 89 df             	mov    %rbx,%rdi
+	l2cap_id = g_io_add_watch(io, G_IO_IN | G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+ 482:	89 05 00 00 00 00    	mov    %eax,0x0(%rip)        # 488 <start_sdp_server+0x2b8>
+	return 0;
+ 488:	31 db                	xor    %ebx,%ebx
+	g_io_channel_unref(io);
+ 48a:	e8 00 00 00 00       	callq  48f <start_sdp_server+0x2bf>
+	if (compat && unix_sock > fileno(stderr)) {
+ 48f:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 496 <start_sdp_server+0x2c6>
+ 496:	e8 00 00 00 00       	callq  49b <start_sdp_server+0x2cb>
+ 49b:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 4a1 <start_sdp_server+0x2d1>
+ 4a1:	39 f8                	cmp    %edi,%eax
+ 4a3:	0f 8d 36 fe ff ff    	jge    2df <start_sdp_server+0x10f>
+		io = g_io_channel_unix_new(unix_sock);
+ 4a9:	e8 00 00 00 00       	callq  4ae <start_sdp_server+0x2de>
+		g_io_channel_set_close_on_unref(io, TRUE);
+ 4ae:	be 01 00 00 00       	mov    $0x1,%esi
+		io = g_io_channel_unix_new(unix_sock);
+ 4b3:	48 89 c5             	mov    %rax,%rbp
+		g_io_channel_set_close_on_unref(io, TRUE);
+ 4b6:	48 89 c7             	mov    %rax,%rdi
+ 4b9:	e8 00 00 00 00       	callq  4be <start_sdp_server+0x2ee>
+		unix_id = g_io_add_watch(io,
+ 4be:	48 89 ef             	mov    %rbp,%rdi
+ 4c1:	b9 00 00 00 00       	mov    $0x0,%ecx
+ 4c6:	ba 00 00 00 00       	mov    $0x0,%edx
+ 4cb:	be 39 00 00 00       	mov    $0x39,%esi
+ 4d0:	e8 00 00 00 00       	callq  4d5 <start_sdp_server+0x305>
+		g_io_channel_unref(io);
+ 4d5:	48 89 ef             	mov    %rbp,%rdi
+		unix_id = g_io_add_watch(io,
+ 4d8:	89 05 00 00 00 00    	mov    %eax,0x0(%rip)        # 4de <start_sdp_server+0x30e>
+		g_io_channel_unref(io);
+ 4de:	e8 00 00 00 00       	callq  4e3 <start_sdp_server+0x313>
+}
+ 4e3:	48 81 c4 a0 00 00 00 	add    $0xa0,%rsp
+ 4ea:	89 d8                	mov    %ebx,%eax
+ 4ec:	5b                   	pop    %rbx
+ 4ed:	5d                   	pop    %rbp
+ 4ee:	41 5c                	pop    %r12
+ 4f0:	c3                   	retq   
+ 4f1:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+		if (setsockopt(l2cap_sock, SOL_L2CAP, L2CAP_LM, &opt, sizeof(opt)) < 0) {
+ 4f8:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 4fe <start_sdp_server+0x32e>
+ 4fe:	48 8d 4c 24 30       	lea    0x30(%rsp),%rcx
+ 503:	41 b8 04 00 00 00    	mov    $0x4,%r8d
+ 509:	ba 03 00 00 00       	mov    $0x3,%edx
+ 50e:	be 06 00 00 00       	mov    $0x6,%esi
+		int opt = L2CAP_LM_MASTER;
+ 513:	c7 44 24 30 01 00 00 	movl   $0x1,0x30(%rsp)
+ 51a:	00 
+		if (setsockopt(l2cap_sock, SOL_L2CAP, L2CAP_LM, &opt, sizeof(opt)) < 0) {
+ 51b:	e8 00 00 00 00       	callq  520 <start_sdp_server+0x350>
+ 520:	85 c0                	test   %eax,%eax
+ 522:	0f 89 43 fd ff ff    	jns    26b <start_sdp_server+0x9b>
+ 528:	e9 35 fe ff ff       	jmpq   362 <start_sdp_server+0x192>
+ 52d:	0f 1f 00             	nopl   (%rax)
+		error("opening L2CAP socket: %s", strerror(errno));
+ 530:	e8 00 00 00 00       	callq  535 <start_sdp_server+0x365>
+ 535:	8b 38                	mov    (%rax),%edi
+ 537:	e8 00 00 00 00       	callq  53c <start_sdp_server+0x36c>
+ 53c:	bf 00 00 00 00       	mov    $0x0,%edi
+ 541:	48 89 c6             	mov    %rax,%rsi
+ 544:	31 c0                	xor    %eax,%eax
+ 546:	e8 00 00 00 00       	callq  54b <start_sdp_server+0x37b>
+ 54b:	e9 30 fe ff ff       	jmpq   380 <start_sdp_server+0x1b0>
+			error("getsockopt: %s", strerror(errno));
+ 550:	e8 00 00 00 00       	callq  555 <start_sdp_server+0x385>
+ 555:	8b 38                	mov    (%rax),%edi
+ 557:	e8 00 00 00 00       	callq  55c <start_sdp_server+0x38c>
+ 55c:	bf 00 00 00 00       	mov    $0x0,%edi
+ 561:	48 89 c6             	mov    %rax,%rsi
+ 564:	31 c0                	xor    %eax,%eax
+ 566:	e8 00 00 00 00       	callq  56b <start_sdp_server+0x39b>
+ 56b:	e9 10 fe ff ff       	jmpq   380 <start_sdp_server+0x1b0>
+		error("binding L2CAP socket: %s", strerror(errno));
+ 570:	e8 00 00 00 00       	callq  575 <start_sdp_server+0x3a5>
+ 575:	8b 38                	mov    (%rax),%edi
+ 577:	e8 00 00 00 00       	callq  57c <start_sdp_server+0x3ac>
+ 57c:	bf 00 00 00 00       	mov    $0x0,%edi
+ 581:	48 89 c6             	mov    %rax,%rsi
+ 584:	31 c0                	xor    %eax,%eax
+ 586:	e8 00 00 00 00       	callq  58b <start_sdp_server+0x3bb>
+ 58b:	e9 f0 fd ff ff       	jmpq   380 <start_sdp_server+0x1b0>
+		error("listen: %s", strerror(errno));
+ 590:	e8 00 00 00 00       	callq  595 <start_sdp_server+0x3c5>
+ 595:	8b 38                	mov    (%rax),%edi
+ 597:	e8 00 00 00 00       	callq  59c <start_sdp_server+0x3cc>
+ 59c:	bf 00 00 00 00       	mov    $0x0,%edi
+ 5a1:	48 89 c6             	mov    %rax,%rsi
+ 5a4:	31 c0                	xor    %eax,%eax
+ 5a6:	e8 00 00 00 00       	callq  5ab <start_sdp_server+0x3db>
+ 5ab:	e9 d0 fd ff ff       	jmpq   380 <start_sdp_server+0x1b0>
+		error("opening UNIX socket: %s", strerror(errno));
+ 5b0:	e8 00 00 00 00       	callq  5b5 <start_sdp_server+0x3e5>
+ 5b5:	8b 38                	mov    (%rax),%edi
+ 5b7:	e8 00 00 00 00       	callq  5bc <start_sdp_server+0x3ec>
+ 5bc:	bf 00 00 00 00       	mov    $0x0,%edi
+ 5c1:	48 89 c6             	mov    %rax,%rsi
+ 5c4:	31 c0                	xor    %eax,%eax
+ 5c6:	e8 00 00 00 00       	callq  5cb <start_sdp_server+0x3fb>
+ 5cb:	e9 b0 fd ff ff       	jmpq   380 <start_sdp_server+0x1b0>
+		error("binding UNIX socket: %s", strerror(errno));
+ 5d0:	e8 00 00 00 00       	callq  5d5 <start_sdp_server+0x405>
+ 5d5:	8b 38                	mov    (%rax),%edi
+ 5d7:	e8 00 00 00 00       	callq  5dc <start_sdp_server+0x40c>
+ 5dc:	bf 00 00 00 00       	mov    $0x0,%edi
+ 5e1:	48 89 c6             	mov    %rax,%rsi
+ 5e4:	31 c0                	xor    %eax,%eax
+ 5e6:	e8 00 00 00 00       	callq  5eb <start_sdp_server+0x41b>
+ 5eb:	e9 90 fd ff ff       	jmpq   380 <start_sdp_server+0x1b0>
+		error("listen UNIX socket: %s", strerror(errno));
+ 5f0:	e8 00 00 00 00       	callq  5f5 <start_sdp_server+0x425>
+ 5f5:	8b 38                	mov    (%rax),%edi
+ 5f7:	e8 00 00 00 00       	callq  5fc <start_sdp_server+0x42c>
+ 5fc:	bf 00 00 00 00       	mov    $0x0,%edi
+ 601:	48 89 c6             	mov    %rax,%rsi
+ 604:	31 c0                	xor    %eax,%eax
+ 606:	e8 00 00 00 00       	callq  60b <start_sdp_server+0x43b>
+ 60b:	e9 70 fd ff ff       	jmpq   380 <start_sdp_server+0x1b0>
+
+0000000000000610 <stop_sdp_server>:
+
+void stop_sdp_server(void)
+{
+ 610:	48 83 ec 08          	sub    $0x8,%rsp
+	info("Stopping SDP server");
+ 614:	bf 00 00 00 00       	mov    $0x0,%edi
+ 619:	31 c0                	xor    %eax,%eax
+ 61b:	e8 00 00 00 00       	callq  620 <stop_sdp_server+0x10>
+
+	sdp_svcdb_reset();
+ 620:	e8 00 00 00 00       	callq  625 <stop_sdp_server+0x15>
+
+	if (unix_id > 0)
+ 625:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 62b <stop_sdp_server+0x1b>
+ 62b:	85 ff                	test   %edi,%edi
+ 62d:	75 41                	jne    670 <stop_sdp_server+0x60>
+		g_source_remove(unix_id);
+
+	if (l2cap_id > 0)
+ 62f:	8b 3d 00 00 00 00    	mov    0x0(%rip),%edi        # 635 <stop_sdp_server+0x25>
+ 635:	85 ff                	test   %edi,%edi
+ 637:	74 05                	je     63e <stop_sdp_server+0x2e>
+		g_source_remove(l2cap_id);
+ 639:	e8 00 00 00 00       	callq  63e <stop_sdp_server+0x2e>
+
+	l2cap_id = unix_id = 0;
+ 63e:	c7 05 00 00 00 00 00 	movl   $0x0,0x0(%rip)        # 648 <stop_sdp_server+0x38>
+ 645:	00 00 00 
+ 648:	c7 05 00 00 00 00 00 	movl   $0x0,0x0(%rip)        # 652 <stop_sdp_server+0x42>
+ 64f:	00 00 00 
+	l2cap_sock = unix_sock = -1;
+ 652:	c7 05 00 00 00 00 ff 	movl   $0xffffffff,0x0(%rip)        # 65c <stop_sdp_server+0x4c>
+ 659:	ff ff ff 
+ 65c:	c7 05 00 00 00 00 ff 	movl   $0xffffffff,0x0(%rip)        # 666 <stop_sdp_server+0x56>
+ 663:	ff ff ff 
+}
+ 666:	48 83 c4 08          	add    $0x8,%rsp
+ 66a:	c3                   	retq   
+ 66b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+		g_source_remove(unix_id);
+ 670:	e8 00 00 00 00       	callq  675 <stop_sdp_server+0x65>
+ 675:	eb b8                	jmp    62f <stop_sdp_server+0x1f>

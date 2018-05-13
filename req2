@@ -1,0 +1,931 @@
+
+bluetoothd-sdp-client.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <cleanup_cached_session>:
+};
+
+static GSList *cached_sdp_sessions = NULL;
+
+static void cleanup_cached_session(struct cached_sdp_session *cached)
+{
+   0:	53                   	push   %rbx
+	cached_sdp_sessions = g_slist_remove(cached_sdp_sessions, cached);
+   1:	48 89 fe             	mov    %rdi,%rsi
+{
+   4:	48 89 fb             	mov    %rdi,%rbx
+	cached_sdp_sessions = g_slist_remove(cached_sdp_sessions, cached);
+   7:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # e <cleanup_cached_session+0xe>
+   e:	e8 00 00 00 00       	callq  13 <cleanup_cached_session+0x13>
+	sdp_close(cached->session);
+  13:	48 8b 7b 10          	mov    0x10(%rbx),%rdi
+	cached_sdp_sessions = g_slist_remove(cached_sdp_sessions, cached);
+  17:	48 89 05 00 00 00 00 	mov    %rax,0x0(%rip)        # 1e <cleanup_cached_session+0x1e>
+	sdp_close(cached->session);
+  1e:	e8 00 00 00 00       	callq  23 <cleanup_cached_session+0x23>
+	g_free(cached);
+  23:	48 89 df             	mov    %rbx,%rdi
+}
+  26:	5b                   	pop    %rbx
+	g_free(cached);
+  27:	e9 00 00 00 00       	jmpq   2c <cleanup_cached_session+0x2c>
+  2c:	0f 1f 40 00          	nopl   0x0(%rax)
+
+0000000000000030 <disconnect_watch>:
+	return NULL;
+}
+
+static gboolean disconnect_watch(GIOChannel *chan, GIOCondition cond,
+							gpointer user_data)
+{
+  30:	53                   	push   %rbx
+	struct cached_sdp_session *cached = user_data;
+
+	g_source_remove(cached->timer);
+  31:	8b 7a 18             	mov    0x18(%rdx),%edi
+{
+  34:	48 89 d3             	mov    %rdx,%rbx
+	g_source_remove(cached->timer);
+  37:	e8 00 00 00 00       	callq  3c <disconnect_watch+0xc>
+	cleanup_cached_session(cached);
+  3c:	48 89 df             	mov    %rbx,%rdi
+  3f:	e8 bc ff ff ff       	callq  0 <cleanup_cached_session>
+
+	return FALSE;
+}
+  44:	31 c0                	xor    %eax,%eax
+  46:	5b                   	pop    %rbx
+  47:	c3                   	retq   
+  48:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+  4f:	00 
+
+0000000000000050 <cached_session_expired>:
+{
+  50:	53                   	push   %rbx
+  51:	48 89 fb             	mov    %rdi,%rbx
+	g_source_remove(cached->io_id);
+  54:	8b 7f 1c             	mov    0x1c(%rdi),%edi
+  57:	e8 00 00 00 00       	callq  5c <cached_session_expired+0xc>
+	cleanup_cached_session(cached);
+  5c:	48 89 df             	mov    %rbx,%rdi
+  5f:	e8 9c ff ff ff       	callq  0 <cleanup_cached_session>
+}
+  64:	31 c0                	xor    %eax,%eax
+  66:	5b                   	pop    %rbx
+  67:	c3                   	retq   
+  68:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+  6f:	00 
+
+0000000000000070 <search_context_cleanup>:
+};
+
+static GSList *context_list = NULL;
+
+static void search_context_cleanup(struct search_context *ctxt)
+{
+  70:	53                   	push   %rbx
+	context_list = g_slist_remove(context_list, ctxt);
+  71:	48 89 fe             	mov    %rdi,%rsi
+{
+  74:	48 89 fb             	mov    %rdi,%rbx
+	context_list = g_slist_remove(context_list, ctxt);
+  77:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 7e <search_context_cleanup+0xe>
+  7e:	e8 00 00 00 00       	callq  83 <search_context_cleanup+0x13>
+  83:	48 89 05 00 00 00 00 	mov    %rax,0x0(%rip)        # 8a <search_context_cleanup+0x1a>
+
+	if (ctxt->destroy)
+  8a:	48 8b 43 20          	mov    0x20(%rbx),%rax
+  8e:	48 85 c0             	test   %rax,%rax
+  91:	74 06                	je     99 <search_context_cleanup+0x29>
+		ctxt->destroy(ctxt->user_data);
+  93:	48 8b 7b 28          	mov    0x28(%rbx),%rdi
+  97:	ff d0                	callq  *%rax
+
+	g_free(ctxt);
+  99:	48 89 df             	mov    %rbx,%rdi
+}
+  9c:	5b                   	pop    %rbx
+	g_free(ctxt);
+  9d:	e9 00 00 00 00       	jmpq   a2 <search_context_cleanup+0x32>
+  a2:	0f 1f 40 00          	nopl   0x0(%rax)
+  a6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+  ad:	00 00 00 
+
+00000000000000b0 <connect_watch>:
+	return TRUE;
+}
+
+static gboolean connect_watch(GIOChannel *chan, GIOCondition cond,
+							gpointer user_data)
+{
+  b0:	41 55                	push   %r13
+  b2:	41 54                	push   %r12
+  b4:	49 89 fc             	mov    %rdi,%r12
+  b7:	55                   	push   %rbp
+  b8:	53                   	push   %rbx
+  b9:	48 89 d3             	mov    %rdx,%rbx
+  bc:	48 83 ec 18          	sub    $0x18,%rsp
+	struct search_context *ctxt = user_data;
+	sdp_list_t *search, *attrids;
+	uint32_t range = 0x0000ffff;
+  c0:	c7 44 24 04 ff ff 00 	movl   $0xffff,0x4(%rsp)
+  c7:	00 
+	socklen_t len;
+	int sk, err, sk_err = 0;
+  c8:	c7 44 24 0c 00 00 00 	movl   $0x0,0xc(%rsp)
+  cf:	00 
+
+	sk = g_io_channel_unix_get_fd(chan);
+  d0:	e8 00 00 00 00       	callq  d5 <connect_watch+0x25>
+	ctxt->io_id = 0;
+
+	len = sizeof(sk_err);
+	if (getsockopt(sk, SOL_SOCKET, SO_ERROR, &sk_err, &len) < 0)
+  d5:	4c 8d 44 24 08       	lea    0x8(%rsp),%r8
+  da:	48 8d 4c 24 0c       	lea    0xc(%rsp),%rcx
+	ctxt->io_id = 0;
+  df:	c7 43 44 00 00 00 00 	movl   $0x0,0x44(%rbx)
+	if (getsockopt(sk, SOL_SOCKET, SO_ERROR, &sk_err, &len) < 0)
+  e6:	ba 04 00 00 00       	mov    $0x4,%edx
+  eb:	be 01 00 00 00       	mov    $0x1,%esi
+  f0:	89 c7                	mov    %eax,%edi
+	len = sizeof(sk_err);
+  f2:	c7 44 24 08 04 00 00 	movl   $0x4,0x8(%rsp)
+  f9:	00 
+	if (getsockopt(sk, SOL_SOCKET, SO_ERROR, &sk_err, &len) < 0)
+  fa:	e8 00 00 00 00       	callq  ff <connect_watch+0x4f>
+  ff:	85 c0                	test   %eax,%eax
+ 101:	0f 88 d9 00 00 00    	js     1e0 <connect_watch+0x130>
+		err = -errno;
+	else
+		err = -sk_err;
+ 107:	8b 6c 24 0c          	mov    0xc(%rsp),%ebp
+ 10b:	f7 dd                	neg    %ebp
+
+	if (err != 0)
+ 10d:	85 ed                	test   %ebp,%ebp
+ 10f:	0f 85 90 00 00 00    	jne    1a5 <connect_watch+0xf5>
+		goto failed;
+
+	if (sdp_set_notify(ctxt->session, search_completed_cb, ctxt) < 0) {
+ 115:	48 8b 7b 10          	mov    0x10(%rbx),%rdi
+ 119:	48 89 da             	mov    %rbx,%rdx
+ 11c:	be 00 00 00 00       	mov    $0x0,%esi
+ 121:	e8 00 00 00 00       	callq  126 <connect_watch+0x76>
+ 126:	85 c0                	test   %eax,%eax
+ 128:	78 76                	js     1a0 <connect_watch+0xf0>
+		err = -EIO;
+		goto failed;
+	}
+
+	search = sdp_list_append(NULL, &ctxt->uuid);
+ 12a:	48 8d 73 30          	lea    0x30(%rbx),%rsi
+ 12e:	31 ff                	xor    %edi,%edi
+ 130:	e8 00 00 00 00       	callq  135 <connect_watch+0x85>
+	attrids = sdp_list_append(NULL, &range);
+ 135:	48 8d 74 24 04       	lea    0x4(%rsp),%rsi
+ 13a:	31 ff                	xor    %edi,%edi
+	search = sdp_list_append(NULL, &ctxt->uuid);
+ 13c:	48 89 c5             	mov    %rax,%rbp
+	attrids = sdp_list_append(NULL, &range);
+ 13f:	e8 00 00 00 00       	callq  144 <connect_watch+0x94>
+	if (sdp_service_search_attr_async(ctxt->session,
+ 144:	48 8b 7b 10          	mov    0x10(%rbx),%rdi
+ 148:	48 89 ee             	mov    %rbp,%rsi
+ 14b:	48 89 c1             	mov    %rax,%rcx
+ 14e:	ba 02 00 00 00       	mov    $0x2,%edx
+	attrids = sdp_list_append(NULL, &range);
+ 153:	49 89 c5             	mov    %rax,%r13
+	if (sdp_service_search_attr_async(ctxt->session,
+ 156:	e8 00 00 00 00       	callq  15b <connect_watch+0xab>
+				search, SDP_ATTR_REQ_RANGE, attrids) < 0) {
+		sdp_list_free(attrids, NULL);
+ 15b:	31 f6                	xor    %esi,%esi
+	if (sdp_service_search_attr_async(ctxt->session,
+ 15d:	85 c0                	test   %eax,%eax
+		sdp_list_free(attrids, NULL);
+ 15f:	4c 89 ef             	mov    %r13,%rdi
+	if (sdp_service_search_attr_async(ctxt->session,
+ 162:	0f 88 88 00 00 00    	js     1f0 <connect_watch+0x140>
+		sdp_list_free(search, NULL);
+		err = -EIO;
+		goto failed;
+	}
+
+	sdp_list_free(attrids, NULL);
+ 168:	e8 00 00 00 00       	callq  16d <connect_watch+0xbd>
+	sdp_list_free(search, NULL);
+ 16d:	48 89 ef             	mov    %rbp,%rdi
+ 170:	31 f6                	xor    %esi,%esi
+ 172:	e8 00 00 00 00       	callq  177 <connect_watch+0xc7>
+
+	/* Set callback responsible for update the internal SDP transaction */
+	ctxt->io_id = g_io_add_watch(chan,
+ 177:	48 89 d9             	mov    %rbx,%rcx
+ 17a:	4c 89 e7             	mov    %r12,%rdi
+ 17d:	ba 00 00 00 00       	mov    $0x0,%edx
+ 182:	be 39 00 00 00       	mov    $0x39,%esi
+ 187:	e8 00 00 00 00       	callq  18c <connect_watch+0xdc>
+ 18c:	89 43 44             	mov    %eax,0x44(%rbx)
+		ctxt->cb(NULL, err, ctxt->user_data);
+
+	search_context_cleanup(ctxt);
+
+	return FALSE;
+}
+ 18f:	48 83 c4 18          	add    $0x18,%rsp
+ 193:	31 c0                	xor    %eax,%eax
+ 195:	5b                   	pop    %rbx
+ 196:	5d                   	pop    %rbp
+ 197:	41 5c                	pop    %r12
+ 199:	41 5d                	pop    %r13
+ 19b:	c3                   	retq   
+ 19c:	0f 1f 40 00          	nopl   0x0(%rax)
+		err = -EIO;
+ 1a0:	bd fb ff ff ff       	mov    $0xfffffffb,%ebp
+	sdp_close(ctxt->session);
+ 1a5:	48 8b 7b 10          	mov    0x10(%rbx),%rdi
+ 1a9:	e8 00 00 00 00       	callq  1ae <connect_watch+0xfe>
+	if (ctxt->cb)
+ 1ae:	48 8b 43 18          	mov    0x18(%rbx),%rax
+	ctxt->session = NULL;
+ 1b2:	48 c7 43 10 00 00 00 	movq   $0x0,0x10(%rbx)
+ 1b9:	00 
+	if (ctxt->cb)
+ 1ba:	48 85 c0             	test   %rax,%rax
+ 1bd:	74 0a                	je     1c9 <connect_watch+0x119>
+		ctxt->cb(NULL, err, ctxt->user_data);
+ 1bf:	48 8b 53 28          	mov    0x28(%rbx),%rdx
+ 1c3:	89 ee                	mov    %ebp,%esi
+ 1c5:	31 ff                	xor    %edi,%edi
+ 1c7:	ff d0                	callq  *%rax
+	search_context_cleanup(ctxt);
+ 1c9:	48 89 df             	mov    %rbx,%rdi
+ 1cc:	e8 9f fe ff ff       	callq  70 <search_context_cleanup>
+}
+ 1d1:	48 83 c4 18          	add    $0x18,%rsp
+ 1d5:	31 c0                	xor    %eax,%eax
+ 1d7:	5b                   	pop    %rbx
+ 1d8:	5d                   	pop    %rbp
+ 1d9:	41 5c                	pop    %r12
+ 1db:	41 5d                	pop    %r13
+ 1dd:	c3                   	retq   
+ 1de:	66 90                	xchg   %ax,%ax
+		err = -errno;
+ 1e0:	e8 00 00 00 00       	callq  1e5 <connect_watch+0x135>
+ 1e5:	8b 28                	mov    (%rax),%ebp
+ 1e7:	f7 dd                	neg    %ebp
+ 1e9:	e9 1f ff ff ff       	jmpq   10d <connect_watch+0x5d>
+ 1ee:	66 90                	xchg   %ax,%ax
+		sdp_list_free(attrids, NULL);
+ 1f0:	e8 00 00 00 00       	callq  1f5 <connect_watch+0x145>
+		sdp_list_free(search, NULL);
+ 1f5:	48 89 ef             	mov    %rbp,%rdi
+ 1f8:	31 f6                	xor    %esi,%esi
+		err = -EIO;
+ 1fa:	bd fb ff ff ff       	mov    $0xfffffffb,%ebp
+		sdp_list_free(search, NULL);
+ 1ff:	e8 00 00 00 00       	callq  204 <connect_watch+0x154>
+		goto failed;
+ 204:	eb 9f                	jmp    1a5 <connect_watch+0xf5>
+ 206:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+ 20d:	00 00 00 
+
+0000000000000210 <get_cached_sdp_session>:
+{
+ 210:	41 55                	push   %r13
+ 212:	49 89 f5             	mov    %rsi,%r13
+ 215:	41 54                	push   %r12
+ 217:	49 89 fc             	mov    %rdi,%r12
+ 21a:	55                   	push   %rbp
+ 21b:	53                   	push   %rbx
+ 21c:	48 83 ec 08          	sub    $0x8,%rsp
+	for (l = cached_sdp_sessions; l != NULL; l = l->next) {
+ 220:	48 8b 1d 00 00 00 00 	mov    0x0(%rip),%rbx        # 227 <get_cached_sdp_session+0x17>
+ 227:	48 85 db             	test   %rbx,%rbx
+ 22a:	75 0d                	jne    239 <get_cached_sdp_session+0x29>
+ 22c:	eb 7a                	jmp    2a8 <get_cached_sdp_session+0x98>
+ 22e:	66 90                	xchg   %ax,%ax
+ 230:	48 8b 5b 08          	mov    0x8(%rbx),%rbx
+ 234:	48 85 db             	test   %rbx,%rbx
+ 237:	74 6f                	je     2a8 <get_cached_sdp_session+0x98>
+		struct cached_sdp_session *c = l->data;
+ 239:	48 8b 2b             	mov    (%rbx),%rbp
+#define BDADDR_LOCAL (&(bdaddr_t) {{0, 0, 0, 0xff, 0xff, 0xff}})
+
+/* Copy, swap, convert BD Address */
+static inline int bacmp(const bdaddr_t *ba1, const bdaddr_t *ba2)
+{
+	return memcmp(ba1, ba2, sizeof(bdaddr_t));
+ 23c:	ba 06 00 00 00       	mov    $0x6,%edx
+ 241:	4c 89 e6             	mov    %r12,%rsi
+ 244:	48 89 ef             	mov    %rbp,%rdi
+ 247:	e8 00 00 00 00       	callq  24c <get_cached_sdp_session+0x3c>
+		if (bacmp(&c->src, src) || bacmp(&c->dst, dst))
+ 24c:	85 c0                	test   %eax,%eax
+ 24e:	75 e0                	jne    230 <get_cached_sdp_session+0x20>
+ 250:	48 8d 7d 06          	lea    0x6(%rbp),%rdi
+ 254:	ba 06 00 00 00       	mov    $0x6,%edx
+ 259:	4c 89 ee             	mov    %r13,%rsi
+ 25c:	e8 00 00 00 00       	callq  261 <get_cached_sdp_session+0x51>
+ 261:	85 c0                	test   %eax,%eax
+ 263:	75 cb                	jne    230 <get_cached_sdp_session+0x20>
+		g_source_remove(c->timer);
+ 265:	8b 7d 18             	mov    0x18(%rbp),%edi
+ 268:	e8 00 00 00 00       	callq  26d <get_cached_sdp_session+0x5d>
+		g_source_remove(c->io_id);
+ 26d:	8b 7d 1c             	mov    0x1c(%rbp),%edi
+ 270:	e8 00 00 00 00       	callq  275 <get_cached_sdp_session+0x65>
+		cached_sdp_sessions = g_slist_remove(cached_sdp_sessions, c);
+ 275:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 27c <get_cached_sdp_session+0x6c>
+		session = c->session;
+ 27c:	48 8b 5d 10          	mov    0x10(%rbp),%rbx
+		cached_sdp_sessions = g_slist_remove(cached_sdp_sessions, c);
+ 280:	48 89 ee             	mov    %rbp,%rsi
+ 283:	e8 00 00 00 00       	callq  288 <get_cached_sdp_session+0x78>
+		g_free(c);
+ 288:	48 89 ef             	mov    %rbp,%rdi
+		cached_sdp_sessions = g_slist_remove(cached_sdp_sessions, c);
+ 28b:	48 89 05 00 00 00 00 	mov    %rax,0x0(%rip)        # 292 <get_cached_sdp_session+0x82>
+		g_free(c);
+ 292:	e8 00 00 00 00       	callq  297 <get_cached_sdp_session+0x87>
+}
+ 297:	48 83 c4 08          	add    $0x8,%rsp
+		return session;
+ 29b:	48 89 d8             	mov    %rbx,%rax
+}
+ 29e:	5b                   	pop    %rbx
+ 29f:	5d                   	pop    %rbp
+ 2a0:	41 5c                	pop    %r12
+ 2a2:	41 5d                	pop    %r13
+ 2a4:	c3                   	retq   
+ 2a5:	0f 1f 00             	nopl   (%rax)
+ 2a8:	48 83 c4 08          	add    $0x8,%rsp
+	return NULL;
+ 2ac:	31 c0                	xor    %eax,%eax
+}
+ 2ae:	5b                   	pop    %rbx
+ 2af:	5d                   	pop    %rbp
+ 2b0:	41 5c                	pop    %r12
+ 2b2:	41 5d                	pop    %r13
+ 2b4:	c3                   	retq   
+ 2b5:	90                   	nop
+ 2b6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+ 2bd:	00 00 00 
+
+00000000000002c0 <search_completed_cb>:
+{
+ 2c0:	41 57                	push   %r15
+ 2c2:	41 56                	push   %r14
+ 2c4:	41 55                	push   %r13
+ 2c6:	41 54                	push   %r12
+ 2c8:	55                   	push   %rbp
+ 2c9:	4c 89 c5             	mov    %r8,%rbp
+ 2cc:	53                   	push   %rbx
+ 2cd:	48 83 ec 18          	sub    $0x18,%rsp
+	if (status || type != SDP_SVC_SEARCH_ATTR_RSP) {
+ 2d1:	66 85 f6             	test   %si,%si
+	int scanned, seqlen = 0, bytesleft = size;
+ 2d4:	c7 44 24 08 00 00 00 	movl   $0x0,0x8(%rsp)
+ 2db:	00 
+	if (status || type != SDP_SVC_SEARCH_ATTR_RSP) {
+ 2dc:	0f 84 de 00 00 00    	je     3c0 <search_completed_cb+0x100>
+		err = -EPROTO;
+ 2e2:	41 be b9 ff ff ff    	mov    $0xffffffb9,%r14d
+	sdp_list_t *recs = NULL;
+ 2e8:	45 31 e4             	xor    %r12d,%r12d
+	cached = g_new0(struct cached_sdp_session, 1);
+ 2eb:	bf 20 00 00 00       	mov    $0x20,%edi
+	cache_sdp_session(&ctxt->src, &ctxt->dst, ctxt->session);
+ 2f0:	4c 8b 6d 10          	mov    0x10(%rbp),%r13
+	cached = g_new0(struct cached_sdp_session, 1);
+ 2f4:	e8 00 00 00 00       	callq  2f9 <search_completed_cb+0x39>
+ 2f9:	48 89 c3             	mov    %rax,%rbx
+}
+static inline void bacpy(bdaddr_t *dst, const bdaddr_t *src)
+{
+	memcpy(dst, src, sizeof(bdaddr_t));
+ 2fc:	8b 45 00             	mov    0x0(%rbp),%eax
+	cached_sdp_sessions = g_slist_append(cached_sdp_sessions, cached);
+ 2ff:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 306 <search_completed_cb+0x46>
+ 306:	48 89 de             	mov    %rbx,%rsi
+ 309:	89 03                	mov    %eax,(%rbx)
+ 30b:	0f b7 45 04          	movzwl 0x4(%rbp),%eax
+ 30f:	66 89 43 04          	mov    %ax,0x4(%rbx)
+ 313:	8b 45 06             	mov    0x6(%rbp),%eax
+ 316:	89 43 06             	mov    %eax,0x6(%rbx)
+ 319:	0f b7 45 0a          	movzwl 0xa(%rbp),%eax
+	cached->session = session;
+ 31d:	4c 89 6b 10          	mov    %r13,0x10(%rbx)
+ 321:	66 89 43 0a          	mov    %ax,0xa(%rbx)
+	cached_sdp_sessions = g_slist_append(cached_sdp_sessions, cached);
+ 325:	e8 00 00 00 00       	callq  32a <search_completed_cb+0x6a>
+	cached->timer = g_timeout_add_seconds(CACHE_TIMEOUT,
+ 32a:	48 89 da             	mov    %rbx,%rdx
+ 32d:	be 00 00 00 00       	mov    $0x0,%esi
+ 332:	bf 02 00 00 00       	mov    $0x2,%edi
+	cached_sdp_sessions = g_slist_append(cached_sdp_sessions, cached);
+ 337:	48 89 05 00 00 00 00 	mov    %rax,0x0(%rip)        # 33e <search_completed_cb+0x7e>
+	cached->timer = g_timeout_add_seconds(CACHE_TIMEOUT,
+ 33e:	e8 00 00 00 00       	callq  343 <search_completed_cb+0x83>
+	sk = sdp_get_socket(session);
+ 343:	4c 89 ef             	mov    %r13,%rdi
+	cached->timer = g_timeout_add_seconds(CACHE_TIMEOUT,
+ 346:	89 43 18             	mov    %eax,0x18(%rbx)
+	sk = sdp_get_socket(session);
+ 349:	e8 00 00 00 00       	callq  34e <search_completed_cb+0x8e>
+	chan = g_io_channel_unix_new(sk);
+ 34e:	89 c7                	mov    %eax,%edi
+ 350:	e8 00 00 00 00       	callq  355 <search_completed_cb+0x95>
+	cached->io_id = g_io_add_watch(chan, G_IO_HUP | G_IO_ERR | G_IO_NVAL,
+ 355:	48 89 d9             	mov    %rbx,%rcx
+	chan = g_io_channel_unix_new(sk);
+ 358:	49 89 c5             	mov    %rax,%r13
+	cached->io_id = g_io_add_watch(chan, G_IO_HUP | G_IO_ERR | G_IO_NVAL,
+ 35b:	ba 00 00 00 00       	mov    $0x0,%edx
+ 360:	be 38 00 00 00       	mov    $0x38,%esi
+ 365:	48 89 c7             	mov    %rax,%rdi
+ 368:	e8 00 00 00 00       	callq  36d <search_completed_cb+0xad>
+	g_io_channel_unref(chan);
+ 36d:	4c 89 ef             	mov    %r13,%rdi
+	cached->io_id = g_io_add_watch(chan, G_IO_HUP | G_IO_ERR | G_IO_NVAL,
+ 370:	89 43 1c             	mov    %eax,0x1c(%rbx)
+	g_io_channel_unref(chan);
+ 373:	e8 00 00 00 00       	callq  378 <search_completed_cb+0xb8>
+	if (ctxt->cb)
+ 378:	48 8b 45 18          	mov    0x18(%rbp),%rax
+ 37c:	48 85 c0             	test   %rax,%rax
+ 37f:	74 0c                	je     38d <search_completed_cb+0xcd>
+		ctxt->cb(recs, err, ctxt->user_data);
+ 381:	48 8b 55 28          	mov    0x28(%rbp),%rdx
+ 385:	44 89 f6             	mov    %r14d,%esi
+ 388:	4c 89 e7             	mov    %r12,%rdi
+ 38b:	ff d0                	callq  *%rax
+	if (recs)
+ 38d:	4d 85 e4             	test   %r12,%r12
+ 390:	74 0d                	je     39f <search_completed_cb+0xdf>
+		sdp_list_free(recs, (sdp_free_func_t) sdp_record_free);
+ 392:	be 00 00 00 00       	mov    $0x0,%esi
+ 397:	4c 89 e7             	mov    %r12,%rdi
+ 39a:	e8 00 00 00 00       	callq  39f <search_completed_cb+0xdf>
+	search_context_cleanup(ctxt);
+ 39f:	48 89 ef             	mov    %rbp,%rdi
+ 3a2:	e8 c9 fc ff ff       	callq  70 <search_context_cleanup>
+}
+ 3a7:	48 83 c4 18          	add    $0x18,%rsp
+ 3ab:	5b                   	pop    %rbx
+ 3ac:	5d                   	pop    %rbp
+ 3ad:	41 5c                	pop    %r12
+ 3af:	41 5d                	pop    %r13
+ 3b1:	41 5e                	pop    %r14
+ 3b3:	41 5f                	pop    %r15
+ 3b5:	c3                   	retq   
+ 3b6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+ 3bd:	00 00 00 
+	if (status || type != SDP_SVC_SEARCH_ATTR_RSP) {
+ 3c0:	40 80 ff 07          	cmp    $0x7,%dil
+ 3c4:	0f 85 18 ff ff ff    	jne    2e2 <search_completed_cb+0x22>
+ 3ca:	48 89 d3             	mov    %rdx,%rbx
+ 3cd:	49 89 cf             	mov    %rcx,%r15
+	scanned = sdp_extract_seqtype(rsp, bytesleft, &dataType, &seqlen);
+ 3d0:	48 8d 54 24 07       	lea    0x7(%rsp),%rdx
+ 3d5:	48 8d 4c 24 08       	lea    0x8(%rsp),%rcx
+ 3da:	44 89 fe             	mov    %r15d,%esi
+ 3dd:	48 89 df             	mov    %rbx,%rdi
+ 3e0:	e8 00 00 00 00       	callq  3e5 <search_completed_cb+0x125>
+	if (!scanned || !seqlen)
+ 3e5:	85 c0                	test   %eax,%eax
+	scanned = sdp_extract_seqtype(rsp, bytesleft, &dataType, &seqlen);
+ 3e7:	41 89 c5             	mov    %eax,%r13d
+	if (!scanned || !seqlen)
+ 3ea:	74 74                	je     460 <search_completed_cb+0x1a0>
+ 3ec:	8b 44 24 08          	mov    0x8(%rsp),%eax
+ 3f0:	85 c0                	test   %eax,%eax
+ 3f2:	74 6c                	je     460 <search_completed_cb+0x1a0>
+	rsp += scanned;
+ 3f4:	4d 63 f5             	movslq %r13d,%r14
+	sdp_list_t *recs = NULL;
+ 3f7:	45 31 e4             	xor    %r12d,%r12d
+	rsp += scanned;
+ 3fa:	49 01 de             	add    %rbx,%r14
+	bytesleft -= scanned;
+ 3fd:	44 89 fb             	mov    %r15d,%ebx
+ 400:	44 29 eb             	sub    %r13d,%ebx
+ 403:	eb 30                	jmp    435 <search_completed_cb+0x175>
+ 405:	0f 1f 00             	nopl   (%rax)
+		if (!recsize) {
+ 408:	8b 54 24 0c          	mov    0xc(%rsp),%edx
+ 40c:	85 d2                	test   %edx,%edx
+ 40e:	74 60                	je     470 <search_completed_cb+0x1b0>
+		scanned += recsize;
+ 410:	41 01 d5             	add    %edx,%r13d
+		rsp += recsize;
+ 413:	48 63 ca             	movslq %edx,%rcx
+		recs = sdp_list_append(recs, rec);
+ 416:	4c 89 e7             	mov    %r12,%rdi
+ 419:	48 89 c6             	mov    %rax,%rsi
+		rsp += recsize;
+ 41c:	49 01 ce             	add    %rcx,%r14
+		bytesleft -= recsize;
+ 41f:	29 d3                	sub    %edx,%ebx
+		recs = sdp_list_append(recs, rec);
+ 421:	e8 00 00 00 00       	callq  426 <search_completed_cb+0x166>
+ 426:	49 89 c4             	mov    %rax,%r12
+	} while (scanned < (ssize_t) size && bytesleft > 0);
+ 429:	49 63 c5             	movslq %r13d,%rax
+ 42c:	4c 39 f8             	cmp    %r15,%rax
+ 42f:	7d 20                	jge    451 <search_completed_cb+0x191>
+ 431:	85 db                	test   %ebx,%ebx
+ 433:	7e 1c                	jle    451 <search_completed_cb+0x191>
+		rec = sdp_extract_pdu(rsp, bytesleft, &recsize);
+ 435:	48 8d 54 24 0c       	lea    0xc(%rsp),%rdx
+ 43a:	89 de                	mov    %ebx,%esi
+ 43c:	4c 89 f7             	mov    %r14,%rdi
+		recsize = 0;
+ 43f:	c7 44 24 0c 00 00 00 	movl   $0x0,0xc(%rsp)
+ 446:	00 
+		rec = sdp_extract_pdu(rsp, bytesleft, &recsize);
+ 447:	e8 00 00 00 00       	callq  44c <search_completed_cb+0x18c>
+		if (!rec)
+ 44c:	48 85 c0             	test   %rax,%rax
+ 44f:	75 b7                	jne    408 <search_completed_cb+0x148>
+	int err = 0;
+ 451:	45 31 f6             	xor    %r14d,%r14d
+ 454:	e9 92 fe ff ff       	jmpq   2eb <search_completed_cb+0x2b>
+ 459:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+ 460:	45 31 f6             	xor    %r14d,%r14d
+	sdp_list_t *recs = NULL;
+ 463:	45 31 e4             	xor    %r12d,%r12d
+ 466:	e9 80 fe ff ff       	jmpq   2eb <search_completed_cb+0x2b>
+ 46b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+			sdp_record_free(rec);
+ 470:	48 89 c7             	mov    %rax,%rdi
+ 473:	e8 00 00 00 00       	callq  478 <search_completed_cb+0x1b8>
+			break;
+ 478:	eb d7                	jmp    451 <search_completed_cb+0x191>
+ 47a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000000480 <search_process_cb>:
+	if (cond & (G_IO_ERR | G_IO_HUP | G_IO_NVAL)) {
+ 480:	83 e6 38             	and    $0x38,%esi
+{
+ 483:	53                   	push   %rbx
+ 484:	48 89 d3             	mov    %rdx,%rbx
+		sdp_close(ctxt->session);
+ 487:	48 8b 7a 10          	mov    0x10(%rdx),%rdi
+	if (cond & (G_IO_ERR | G_IO_HUP | G_IO_NVAL)) {
+ 48b:	74 33                	je     4c0 <search_process_cb+0x40>
+		sdp_close(ctxt->session);
+ 48d:	e8 00 00 00 00       	callq  492 <search_process_cb+0x12>
+		if (ctxt->cb)
+ 492:	48 8b 43 18          	mov    0x18(%rbx),%rax
+		ctxt->session = NULL;
+ 496:	48 c7 43 10 00 00 00 	movq   $0x0,0x10(%rbx)
+ 49d:	00 
+		if (ctxt->cb)
+ 49e:	48 85 c0             	test   %rax,%rax
+ 4a1:	74 0d                	je     4b0 <search_process_cb+0x30>
+			ctxt->cb(NULL, -EIO, ctxt->user_data);
+ 4a3:	48 8b 53 28          	mov    0x28(%rbx),%rdx
+ 4a7:	be fb ff ff ff       	mov    $0xfffffffb,%esi
+ 4ac:	31 ff                	xor    %edi,%edi
+ 4ae:	ff d0                	callq  *%rax
+		search_context_cleanup(ctxt);
+ 4b0:	48 89 df             	mov    %rbx,%rdi
+ 4b3:	e8 b8 fb ff ff       	callq  70 <search_context_cleanup>
+ 4b8:	31 c0                	xor    %eax,%eax
+}
+ 4ba:	5b                   	pop    %rbx
+ 4bb:	c3                   	retq   
+ 4bc:	0f 1f 40 00          	nopl   0x0(%rax)
+	if (sdp_process(ctxt->session) < 0)
+ 4c0:	e8 00 00 00 00       	callq  4c5 <search_process_cb+0x45>
+ 4c5:	f7 d0                	not    %eax
+		return FALSE;
+ 4c7:	c1 e8 1f             	shr    $0x1f,%eax
+}
+ 4ca:	5b                   	pop    %rbx
+ 4cb:	c3                   	retq   
+ 4cc:	0f 1f 40 00          	nopl   0x0(%rax)
+
+00000000000004d0 <find_by_bdaddr>:
+
+	return 0;
+}
+
+static int find_by_bdaddr(gconstpointer data, gconstpointer user_data)
+{
+ 4d0:	55                   	push   %rbp
+	return memcmp(ba1, ba2, sizeof(bdaddr_t));
+ 4d1:	ba 06 00 00 00       	mov    $0x6,%edx
+ 4d6:	48 89 f5             	mov    %rsi,%rbp
+ 4d9:	53                   	push   %rbx
+ 4da:	48 89 fb             	mov    %rdi,%rbx
+ 4dd:	48 83 ec 08          	sub    $0x8,%rsp
+ 4e1:	e8 00 00 00 00       	callq  4e6 <find_by_bdaddr+0x16>
+	const struct search_context *ctxt = data, *search = user_data;
+	int ret;
+
+	ret = bacmp(&ctxt->src, &search->src);
+	if (ret != 0)
+ 4e6:	85 c0                	test   %eax,%eax
+ 4e8:	75 1e                	jne    508 <find_by_bdaddr+0x38>
+		return ret;
+
+	return bacmp(&ctxt->dst, &search->dst);
+}
+ 4ea:	48 83 c4 08          	add    $0x8,%rsp
+ 4ee:	48 8d 7b 06          	lea    0x6(%rbx),%rdi
+ 4f2:	48 8d 75 06          	lea    0x6(%rbp),%rsi
+ 4f6:	5b                   	pop    %rbx
+ 4f7:	5d                   	pop    %rbp
+ 4f8:	ba 06 00 00 00       	mov    $0x6,%edx
+ 4fd:	e9 00 00 00 00       	jmpq   502 <find_by_bdaddr+0x32>
+ 502:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+ 508:	48 83 c4 08          	add    $0x8,%rsp
+ 50c:	5b                   	pop    %rbx
+ 50d:	5d                   	pop    %rbp
+ 50e:	c3                   	retq   
+ 50f:	90                   	nop
+
+0000000000000510 <bt_search_service>:
+{
+ 510:	41 57                	push   %r15
+ 512:	41 56                	push   %r14
+ 514:	41 55                	push   %r13
+ 516:	49 89 cd             	mov    %rcx,%r13
+ 519:	41 54                	push   %r12
+ 51b:	55                   	push   %rbp
+ 51c:	53                   	push   %rbx
+ 51d:	48 83 ec 28          	sub    $0x28,%rsp
+	if (!cb)
+ 521:	48 85 c9             	test   %rcx,%rcx
+{
+ 524:	4c 89 04 24          	mov    %r8,(%rsp)
+ 528:	8b 5c 24 60          	mov    0x60(%rsp),%ebx
+	if (!cb)
+ 52c:	0f 84 76 01 00 00    	je     6a8 <bt_search_service+0x198>
+ 532:	49 89 d6             	mov    %rdx,%r14
+ 535:	49 89 fc             	mov    %rdi,%r12
+ 538:	48 89 f5             	mov    %rsi,%rbp
+ 53b:	4d 89 cf             	mov    %r9,%r15
+	uint32_t prio = 1;
+ 53e:	c7 44 24 1c 01 00 00 	movl   $0x1,0x1c(%rsp)
+ 545:	00 
+	s = get_cached_sdp_session(src, dst);
+ 546:	e8 c5 fc ff ff       	callq  210 <get_cached_sdp_session>
+	if (!s)
+ 54b:	48 85 c0             	test   %rax,%rax
+	s = get_cached_sdp_session(src, dst);
+ 54e:	48 89 c2             	mov    %rax,%rdx
+	if (!s)
+ 551:	0f 84 19 01 00 00    	je     670 <bt_search_service+0x160>
+	*ctxt = g_try_malloc0(sizeof(struct search_context));
+ 557:	bf 48 00 00 00       	mov    $0x48,%edi
+ 55c:	48 89 54 24 08       	mov    %rdx,0x8(%rsp)
+ 561:	e8 00 00 00 00       	callq  566 <bt_search_service+0x56>
+	if (!*ctxt) {
+ 566:	48 85 c0             	test   %rax,%rax
+	*ctxt = g_try_malloc0(sizeof(struct search_context));
+ 569:	48 89 c3             	mov    %rax,%rbx
+	if (!*ctxt) {
+ 56c:	48 8b 54 24 08       	mov    0x8(%rsp),%rdx
+ 571:	0f 84 3b 01 00 00    	je     6b2 <bt_search_service+0x1a2>
+	memcpy(dst, src, sizeof(bdaddr_t));
+ 577:	41 8b 04 24          	mov    (%r12),%eax
+	sk = sdp_get_socket(s);
+ 57b:	48 89 d7             	mov    %rdx,%rdi
+ 57e:	89 03                	mov    %eax,(%rbx)
+ 580:	41 0f b7 44 24 04    	movzwl 0x4(%r12),%eax
+ 586:	66 89 43 04          	mov    %ax,0x4(%rbx)
+ 58a:	8b 45 00             	mov    0x0(%rbp),%eax
+ 58d:	89 43 06             	mov    %eax,0x6(%rbx)
+ 590:	0f b7 45 04          	movzwl 0x4(%rbp),%eax
+	(*ctxt)->session = s;
+ 594:	48 89 53 10          	mov    %rdx,0x10(%rbx)
+ 598:	66 89 43 0a          	mov    %ax,0xa(%rbx)
+	(*ctxt)->uuid = *uuid;
+ 59c:	49 8b 06             	mov    (%r14),%rax
+ 59f:	48 89 43 30          	mov    %rax,0x30(%rbx)
+ 5a3:	49 8b 46 08          	mov    0x8(%r14),%rax
+ 5a7:	48 89 43 38          	mov    %rax,0x38(%rbx)
+ 5ab:	41 8b 46 10          	mov    0x10(%r14),%eax
+ 5af:	89 43 40             	mov    %eax,0x40(%rbx)
+	sk = sdp_get_socket(s);
+ 5b2:	e8 00 00 00 00       	callq  5b7 <bt_search_service+0xa7>
+	if (setsockopt(sk, SOL_SOCKET, SO_PRIORITY, &prio, sizeof(prio)) < 0)
+ 5b7:	48 8d 4c 24 1c       	lea    0x1c(%rsp),%rcx
+ 5bc:	41 b8 04 00 00 00    	mov    $0x4,%r8d
+ 5c2:	ba 0c 00 00 00       	mov    $0xc,%edx
+ 5c7:	be 01 00 00 00       	mov    $0x1,%esi
+ 5cc:	89 c7                	mov    %eax,%edi
+	sk = sdp_get_socket(s);
+ 5ce:	89 c5                	mov    %eax,%ebp
+	if (setsockopt(sk, SOL_SOCKET, SO_PRIORITY, &prio, sizeof(prio)) < 0)
+ 5d0:	e8 00 00 00 00       	callq  5d5 <bt_search_service+0xc5>
+ 5d5:	85 c0                	test   %eax,%eax
+ 5d7:	78 67                	js     640 <bt_search_service+0x130>
+	chan = g_io_channel_unix_new(sk);
+ 5d9:	89 ef                	mov    %ebp,%edi
+ 5db:	e8 00 00 00 00       	callq  5e0 <bt_search_service+0xd0>
+	(*ctxt)->io_id = g_io_add_watch(chan,
+ 5e0:	48 89 d9             	mov    %rbx,%rcx
+	chan = g_io_channel_unix_new(sk);
+ 5e3:	48 89 c5             	mov    %rax,%rbp
+	(*ctxt)->io_id = g_io_add_watch(chan,
+ 5e6:	48 89 c7             	mov    %rax,%rdi
+ 5e9:	ba 00 00 00 00       	mov    $0x0,%edx
+ 5ee:	be 3c 00 00 00       	mov    $0x3c,%esi
+ 5f3:	e8 00 00 00 00       	callq  5f8 <bt_search_service+0xe8>
+	g_io_channel_unref(chan);
+ 5f8:	48 89 ef             	mov    %rbp,%rdi
+	(*ctxt)->io_id = g_io_add_watch(chan,
+ 5fb:	89 43 44             	mov    %eax,0x44(%rbx)
+	g_io_channel_unref(chan);
+ 5fe:	e8 00 00 00 00       	callq  603 <bt_search_service+0xf3>
+	ctxt->user_data	= user_data;
+ 603:	48 8b 04 24          	mov    (%rsp),%rax
+	context_list = g_slist_append(context_list, ctxt);
+ 607:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 60e <bt_search_service+0xfe>
+ 60e:	48 89 de             	mov    %rbx,%rsi
+	ctxt->cb	= cb;
+ 611:	4c 89 6b 18          	mov    %r13,0x18(%rbx)
+	ctxt->destroy	= destroy;
+ 615:	4c 89 7b 20          	mov    %r15,0x20(%rbx)
+	ctxt->user_data	= user_data;
+ 619:	48 89 43 28          	mov    %rax,0x28(%rbx)
+	context_list = g_slist_append(context_list, ctxt);
+ 61d:	e8 00 00 00 00       	callq  622 <bt_search_service+0x112>
+ 622:	48 89 05 00 00 00 00 	mov    %rax,0x0(%rip)        # 629 <bt_search_service+0x119>
+	return 0;
+ 629:	31 c0                	xor    %eax,%eax
+}
+ 62b:	48 83 c4 28          	add    $0x28,%rsp
+ 62f:	5b                   	pop    %rbx
+ 630:	5d                   	pop    %rbp
+ 631:	41 5c                	pop    %r12
+ 633:	41 5d                	pop    %r13
+ 635:	41 5e                	pop    %r14
+ 637:	41 5f                	pop    %r15
+ 639:	c3                   	retq   
+ 63a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+						strerror(errno), errno);
+ 640:	e8 00 00 00 00       	callq  645 <bt_search_service+0x135>
+		warn("Setting SDP priority failed: %s (%d)",
+ 645:	44 8b 20             	mov    (%rax),%r12d
+ 648:	44 89 e7             	mov    %r12d,%edi
+ 64b:	e8 00 00 00 00       	callq  650 <bt_search_service+0x140>
+ 650:	44 89 e2             	mov    %r12d,%edx
+ 653:	48 89 c6             	mov    %rax,%rsi
+ 656:	bf 00 00 00 00       	mov    $0x0,%edi
+ 65b:	31 c0                	xor    %eax,%eax
+ 65d:	e8 00 00 00 00       	callq  662 <bt_search_service+0x152>
+ 662:	e9 72 ff ff ff       	jmpq   5d9 <bt_search_service+0xc9>
+ 667:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+ 66e:	00 00 
+		s = sdp_connect(src, dst, SDP_NON_BLOCKING | flags);
+ 670:	83 cb 04             	or     $0x4,%ebx
+ 673:	48 89 ee             	mov    %rbp,%rsi
+ 676:	4c 89 e7             	mov    %r12,%rdi
+ 679:	0f b7 d3             	movzwl %bx,%edx
+ 67c:	e8 00 00 00 00       	callq  681 <bt_search_service+0x171>
+	if (!s)
+ 681:	48 85 c0             	test   %rax,%rax
+		s = sdp_connect(src, dst, SDP_NON_BLOCKING | flags);
+ 684:	48 89 c2             	mov    %rax,%rdx
+	if (!s)
+ 687:	0f 85 ca fe ff ff    	jne    557 <bt_search_service+0x47>
+		return -errno;
+ 68d:	e8 00 00 00 00       	callq  692 <bt_search_service+0x182>
+ 692:	8b 00                	mov    (%rax),%eax
+ 694:	f7 d8                	neg    %eax
+	if (err < 0)
+ 696:	85 c0                	test   %eax,%eax
+ 698:	78 91                	js     62b <bt_search_service+0x11b>
+	struct search_context *ctxt = NULL;
+ 69a:	31 db                	xor    %ebx,%ebx
+ 69c:	e9 62 ff ff ff       	jmpq   603 <bt_search_service+0xf3>
+ 6a1:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+		return -EINVAL;
+ 6a8:	b8 ea ff ff ff       	mov    $0xffffffea,%eax
+ 6ad:	e9 79 ff ff ff       	jmpq   62b <bt_search_service+0x11b>
+		sdp_close(s);
+ 6b2:	48 89 d7             	mov    %rdx,%rdi
+ 6b5:	e8 00 00 00 00       	callq  6ba <bt_search_service+0x1aa>
+		return -ENOMEM;
+ 6ba:	b8 f4 ff ff ff       	mov    $0xfffffff4,%eax
+ 6bf:	e9 67 ff ff ff       	jmpq   62b <bt_search_service+0x11b>
+ 6c4:	66 90                	xchg   %ax,%ax
+ 6c6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+ 6cd:	00 00 00 
+
+00000000000006d0 <bt_cancel_discovery>:
+
+int bt_cancel_discovery(const bdaddr_t *src, const bdaddr_t *dst)
+{
+ 6d0:	53                   	push   %rbx
+ 6d1:	48 89 fa             	mov    %rdi,%rdx
+	struct search_context match, *ctxt;
+	GSList *l;
+
+	memset(&match, 0, sizeof(match));
+ 6d4:	31 c0                	xor    %eax,%eax
+ 6d6:	b9 09 00 00 00       	mov    $0x9,%ecx
+{
+ 6db:	48 83 ec 50          	sub    $0x50,%rsp
+	memset(&match, 0, sizeof(match));
+ 6df:	48 89 e7             	mov    %rsp,%rdi
+ 6e2:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+ 6e5:	8b 02                	mov    (%rdx),%eax
+	bacpy(&match.src, src);
+	bacpy(&match.dst, dst);
+
+	/* Ongoing SDP Discovery */
+	l = g_slist_find_custom(context_list, &match, find_by_bdaddr);
+ 6e7:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 6ee <bt_cancel_discovery+0x1e>
+ 6ee:	89 04 24             	mov    %eax,(%rsp)
+ 6f1:	0f b7 42 04          	movzwl 0x4(%rdx),%eax
+ 6f5:	ba 00 00 00 00       	mov    $0x0,%edx
+ 6fa:	66 89 44 24 04       	mov    %ax,0x4(%rsp)
+ 6ff:	8b 06                	mov    (%rsi),%eax
+ 701:	89 44 24 06          	mov    %eax,0x6(%rsp)
+ 705:	0f b7 46 04          	movzwl 0x4(%rsi),%eax
+ 709:	48 89 e6             	mov    %rsp,%rsi
+ 70c:	66 89 44 24 0a       	mov    %ax,0xa(%rsp)
+ 711:	e8 00 00 00 00       	callq  716 <bt_cancel_discovery+0x46>
+	if (l == NULL)
+ 716:	48 85 c0             	test   %rax,%rax
+ 719:	74 45                	je     760 <bt_cancel_discovery+0x90>
+		return -ENOENT;
+
+	ctxt = l->data;
+ 71b:	48 8b 18             	mov    (%rax),%rbx
+
+	if (!ctxt->session)
+ 71e:	48 8b 7b 10          	mov    0x10(%rbx),%rdi
+ 722:	48 85 ff             	test   %rdi,%rdi
+ 725:	74 40                	je     767 <bt_cancel_discovery+0x97>
+		return -ENOTCONN;
+
+	if (ctxt->io_id)
+ 727:	8b 43 44             	mov    0x44(%rbx),%eax
+ 72a:	85 c0                	test   %eax,%eax
+ 72c:	75 1a                	jne    748 <bt_cancel_discovery+0x78>
+		g_source_remove(ctxt->io_id);
+
+	if (ctxt->session)
+		sdp_close(ctxt->session);
+ 72e:	e8 00 00 00 00       	callq  733 <bt_cancel_discovery+0x63>
+
+	search_context_cleanup(ctxt);
+ 733:	48 89 df             	mov    %rbx,%rdi
+ 736:	e8 35 f9 ff ff       	callq  70 <search_context_cleanup>
+
+	return 0;
+ 73b:	31 c0                	xor    %eax,%eax
+}
+ 73d:	48 83 c4 50          	add    $0x50,%rsp
+ 741:	5b                   	pop    %rbx
+ 742:	c3                   	retq   
+ 743:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+		g_source_remove(ctxt->io_id);
+ 748:	89 c7                	mov    %eax,%edi
+ 74a:	e8 00 00 00 00       	callq  74f <bt_cancel_discovery+0x7f>
+	if (ctxt->session)
+ 74f:	48 8b 7b 10          	mov    0x10(%rbx),%rdi
+ 753:	48 85 ff             	test   %rdi,%rdi
+ 756:	74 db                	je     733 <bt_cancel_discovery+0x63>
+ 758:	eb d4                	jmp    72e <bt_cancel_discovery+0x5e>
+ 75a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+		return -ENOENT;
+ 760:	b8 fe ff ff ff       	mov    $0xfffffffe,%eax
+ 765:	eb d6                	jmp    73d <bt_cancel_discovery+0x6d>
+		return -ENOTCONN;
+ 767:	b8 95 ff ff ff       	mov    $0xffffff95,%eax
+ 76c:	eb cf                	jmp    73d <bt_cancel_discovery+0x6d>
+ 76e:	66 90                	xchg   %ax,%ax
+
+0000000000000770 <bt_clear_cached_session>:
+
+void bt_clear_cached_session(const bdaddr_t *src, const bdaddr_t *dst)
+{
+ 770:	48 83 ec 08          	sub    $0x8,%rsp
+	sdp_session_t *session;
+
+	session = get_cached_sdp_session(src, dst);
+ 774:	e8 97 fa ff ff       	callq  210 <get_cached_sdp_session>
+	if (session)
+ 779:	48 85 c0             	test   %rax,%rax
+ 77c:	74 12                	je     790 <bt_clear_cached_session+0x20>
+		sdp_close(session);
+ 77e:	48 89 c7             	mov    %rax,%rdi
+}
+ 781:	48 83 c4 08          	add    $0x8,%rsp
+		sdp_close(session);
+ 785:	e9 00 00 00 00       	jmpq   78a <bt_clear_cached_session+0x1a>
+ 78a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+}
+ 790:	48 83 c4 08          	add    $0x8,%rsp
+ 794:	c3                   	retq   
